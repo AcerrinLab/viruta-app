@@ -5,6 +5,7 @@ import { useSesion } from '../App.jsx';
 import { Chip, Interruptor, Selector } from '../componentes/Comunes.jsx';
 import { Icono } from '../componentes/Iconos.jsx';
 import TableroTaller from '../componentes/TableroTaller.jsx';
+import TarjetasTaller from '../componentes/TarjetasTaller.jsx';
 import { MATERIALES } from '../lib/diseno.js';
 import { ESTADOS } from '../lib/estados.js';
 import { guardarTema, olvidarTema, temaGuardado, usarAmbiente, usarMovil } from '../lib/tema.js';
@@ -203,6 +204,26 @@ function CuentaCliente({ seccion, sesion, salir }) {
 
 /* ---------------- Carpinteria ---------------- */
 
+/** El resumen se puede ver en grilla o en tarjetas; la eleccion queda guardada. */
+function VistaResumen(props) {
+  const [vista, setVista] = useState(() => {
+    try { return localStorage.getItem('viruta.vistaResumen') || 'grilla'; } catch { return 'grilla'; }
+  });
+  const cambiar = (v) => {
+    setVista(v);
+    try { localStorage.setItem('viruta.vistaResumen', v); } catch { /* sin almacenamiento */ }
+  };
+  return (
+    <>
+      <div className="vista-resumen">
+        <Selector etiqueta="Vista de las estadísticas" valor={vista} alCambiar={cambiar}
+          opciones={[['grilla', 'Grilla'], ['tarjetas', 'Tarjetas']]} />
+      </div>
+      {vista === 'tarjetas' ? <TarjetasTaller {...props} /> : <TableroTaller {...props} />}
+    </>
+  );
+}
+
 function CuentaTaller({ seccion, sesion, salir }) {
   const [perfil, setPerfil] = useState(null);
   const [pedidos, setPedidos] = useState([]);
@@ -244,7 +265,7 @@ function CuentaTaller({ seccion, sesion, salir }) {
     <>
       {error && <p className="nota error">{error}</p>}
 
-      {seccion === 'resumen' && <TableroTaller pedidos={pedidos} resumen={resumen} perfil={perfil} zona={zona} />}
+      {seccion === 'resumen' && <VistaResumen pedidos={pedidos} resumen={resumen} perfil={perfil} zona={zona} />}
 
       {seccion === 'perfil' && perfil && (
         <>
@@ -300,6 +321,32 @@ function CuentaTaller({ seccion, sesion, salir }) {
 }
 
 /** Pagina de la cuenta: menu lateral con iconos y nombres, y el contenido de cada seccion. */
+/** Accesos del menu lateral: proyectos recientes del cliente o pedidos recientes del taller. */
+function Accesos({ sesion, plegado }) {
+  const [items, setItems] = useState([]);
+  const taller = sesion.rol === 'CARPINTERIA';
+  useEffect(() => {
+    const ruta = taller ? '/api/carpinteria/pedidos' : '/api/proyectos';
+    api(ruta).then((lista) => {
+      const orden = [...(lista || [])].sort((a, b) => String(b.actualizado || b.creado || '').localeCompare(String(a.actualizado || a.creado || '')));
+      setItems(orden.slice(0, 4).map((x) => ({
+        id: x.id,
+        titulo: x.diseno?.nombre || 'Sin nombre',
+        a: taller ? '/panel?pedido=' + x.id : '/disenar?proyecto=' + x.id,
+      })));
+    }).catch(() => {});
+  }, [taller]);
+  if (items.length === 0 || plegado) return null;
+  return (
+    <div className="accesos">
+      <p className="accesos-titulo">{taller ? 'Pedidos recientes' : 'Proyectos recientes'}</p>
+      {items.map((x) => (
+        <Link key={x.id} to={x.a} title={x.titulo}><Icono nombre="documento" tam={18} /><span>{x.titulo}</span></Link>
+      ))}
+    </div>
+  );
+}
+
 /** Inicio de la cuenta en el celular: avatar al centro y la lista de opciones. */
 function Hub({ sesion, secciones, salir }) {
   const taller = sesion.rol === 'CARPINTERIA';
@@ -386,6 +433,11 @@ export default function Cuenta() {
             </NavLink>
           ))}
         </nav>
+        <Accesos sesion={sesion} plegado={plegado === true} />
+        <Link to="/cuenta/perfil" className="tarjeta-usuario" title={sesion.nombre}>
+          <span className="avatar">{iniciales(sesion.nombre)}</span>
+          <span className="tarjeta-usuario-texto"><strong>{sesion.nombre}</strong><span>{taller ? 'Carpintería' : 'Cliente'}</span></span>
+        </Link>
       </aside>
       <section className="cuenta-contenido">
         <p className="migas">

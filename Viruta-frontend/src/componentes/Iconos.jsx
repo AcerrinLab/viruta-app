@@ -2,6 +2,11 @@
 // (trazo 1.8, puntas y uniones redondas). Heredan el color del texto.
 
 const RUTAS = {
+  filtro: 'M4 6.5h16M7 12h10M10 17.5h4',
+  abajo: 'M6.5 9.5 12 15l5.5-5.5',
+  documento: 'M7 3.5h7l4 4V19a1.5 1.5 0 0 1-1.5 1.5h-9.5A1.5 1.5 0 0 1 5.5 19V5A1.5 1.5 0 0 1 7 3.5ZM13.5 3.5V8h4.5M8.5 12.5h7M8.5 16h5',
+  cuadricula: 'M4.5 4.5h6v6h-6v-6ZM13.5 4.5h6v6h-6v-6ZM4.5 13.5h6v6h-6v-6ZM13.5 13.5h6v6h-6v-6Z',
+
   lupa: 'M10.8 17.6a6.8 6.8 0 1 0 0-13.6 6.8 6.8 0 0 0 0 13.6ZM15.8 15.8l4.4 4.4',
   panel: 'M4 6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 20 6v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18V6ZM9.5 4.5v15',
 

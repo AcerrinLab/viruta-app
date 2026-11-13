@@ -7,6 +7,7 @@ import { ACCION_CARPINTERIA, siguienteDeCarpinteria } from '../lib/estados.js';
 import { COLORES, MATERIALES } from '../lib/diseno.js';
 import { medidas, mmACm, pesos } from '../lib/unidades.js';
 import { Icono } from '../componentes/Iconos.jsx';
+import { usarMovil } from '../lib/tema.js';
 
 const PESTANAS = [
   ['Nuevos', ['PENDIENTE']],
@@ -163,6 +164,7 @@ export default function Panel() {
   const [pedidos, setPedidos] = useState([]);
   const [resumen, setResumen] = useState(null);
   const [pestana, setPestana] = useState(0);
+  const movil = usarMovil();
   const [error, setError] = useState('');
 
   const cargar = useCallback(() => {
@@ -206,6 +208,19 @@ export default function Panel() {
         <div className="tarjeta dato"><span className="tenue">Comisión Viruta</span><span className="numero">{pesos(resumen?.comision)}</span></div>
       </div>
 
+      {movil ? (
+        <label className="filtro">
+          <Icono nombre="filtro" tam={18} />
+          <span className="filtro-etiqueta">Mostrar</span>
+          <select value={pestana} onChange={(e) => setPestana(Number(e.target.value))} aria-label="Filtrar pedidos">
+            {PESTANAS.map(([nombre, estados], i) => {
+              const cantidad = pedidos.filter((p) => estados.includes(p.estado)).length;
+              return <option key={nombre} value={i}>{nombre}{cantidad > 0 ? ` (${cantidad})` : ''}</option>;
+            })}
+          </select>
+          <Icono nombre="abajo" tam={16} />
+        </label>
+      ) : (
       <div className="pestanas">
         <Selector
           etiqueta="Pedidos"
@@ -217,6 +232,7 @@ export default function Panel() {
           alCambiar={setPestana}
         />
       </div>
+      )}
 
       {visibles.length === 0 && <p className="tenue">No hay pedidos acá.</p>}
       {visibles.map((p) => (
