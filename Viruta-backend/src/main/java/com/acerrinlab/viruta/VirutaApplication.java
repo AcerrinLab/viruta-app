@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
+ * Aplicacion
  * Monolito modular de Viruta. Cada modulo vive en su paquete, expone una interfaz publica
  * (XxxApi) y guarda su implementacion en el subpaquete "interno" (RNF-06, RNF-07).
  */
