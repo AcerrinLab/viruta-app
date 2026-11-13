@@ -63,7 +63,7 @@ export function seguirSistema(alCambiar) {
 // ---------- Ambiente: luces de fondo y su movimiento ----------
 
 const CLAVE_AMBIENTE = 'viruta.ambiente';
-const AMBIENTE_INICIAL = { luces: true, movimiento: true };
+const AMBIENTE_INICIAL = { luces: false, movimiento: true };
 
 export function leerAmbiente() {
   try {

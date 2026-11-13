@@ -10,6 +10,7 @@ import Panel from './paginas/Panel.jsx';
 import PagoSimulado from './paginas/PagoSimulado.jsx';
 import Metricas from './paginas/Metricas.jsx';
 import Cuenta from './paginas/Cuenta.jsx';
+import Buscador from './componentes/Buscador.jsx';
 import { Interruptor, aplicarTema } from './componentes/Comunes.jsx';
 import { Icono } from './componentes/Iconos.jsx';
 import { guardarTema, seguirSistema, temaActual, usarAmbiente, usarTema } from './lib/tema.js';
@@ -158,6 +159,7 @@ export default function App() {
           {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={(e) => 'solo-escritorio ' + activo(e)}>Mis pedidos</NavLink>}
           {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={(e) => 'solo-escritorio ' + activo(e)}>Panel</NavLink>}
           {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={(e) => 'solo-escritorio ' + activo(e)}>Métricas</NavLink>}
+          <Buscador sesion={sesion} />
           <BotonTema />
           {sesion ? <Usuario sesion={sesion} alSalir={salir} /> : <NavLink to="/ingresar" className={(e) => 'solo-escritorio ' + activo(e)}>Ingresar</NavLink>}
         </nav>
@@ -165,11 +167,12 @@ export default function App() {
       <nav className="pestanas-inferiores" aria-label="Secciones">
         <NavLink to="/" end className={activo}><Icono nombre="casa" tam={22} /><span>Inicio</span></NavLink>
         {(!sesion || sesion.rol === 'CLIENTE') && <NavLink to="/disenar" className={activo}><Icono nombre="cubo" tam={22} /><span>Diseñar</span></NavLink>}
+        {sesion?.rol === 'CLIENTE' && <NavLink to="/cuenta/proyectos" className={activo}><Icono nombre="lista" tam={22} /><span>Proyectos</span></NavLink>}
         {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={activo}><Icono nombre="bandeja" tam={22} /><span>Pedidos</span></NavLink>}
         {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={activo}><Icono nombre="martillo" tam={22} /><span>Panel</span></NavLink>}
         {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={activo}><Icono nombre="grafico" tam={22} /><span>Métricas</span></NavLink>}
         {sesion
-          ? <NavLink to="/cuenta" className={activo}><Icono nombre="persona" tam={22} /><span>Cuenta</span></NavLink>
+          ? <NavLink to="/cuenta" end className={({ isActive }) => (isActive || (window.location.pathname.startsWith('/cuenta/') && !window.location.pathname.endsWith('/proyectos')) ? 'activo' : '')}><Icono nombre="persona" tam={22} /><span>Cuenta</span></NavLink>
           : <NavLink to="/ingresar" className={activo}><Icono nombre="persona" tam={22} /><span>Ingresar</span></NavLink>}
       </nav>
       <Routes>

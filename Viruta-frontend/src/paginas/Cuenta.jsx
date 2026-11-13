@@ -4,6 +4,7 @@ import { api } from '../api.js';
 import { useSesion } from '../App.jsx';
 import { Chip, Interruptor, Selector } from '../componentes/Comunes.jsx';
 import { Icono } from '../componentes/Iconos.jsx';
+import TableroTaller from '../componentes/TableroTaller.jsx';
 import { MATERIALES } from '../lib/diseno.js';
 import { ESTADOS } from '../lib/estados.js';
 import { guardarTema, olvidarTema, temaGuardado, usarAmbiente, usarMovil } from '../lib/tema.js';
@@ -243,51 +244,7 @@ function CuentaTaller({ seccion, sesion, salir }) {
     <>
       {error && <p className="nota error">{error}</p>}
 
-      {seccion === 'resumen' && (
-        <>
-          <div className="indicadores">
-            <Indicador icono="campana" etiqueta="Pedidos nuevos" valor={cuenta.nuevos} detalle={`${cuenta.esperando} esperan respuesta`} />
-            <Indicador icono="reloj" etiqueta="En curso" valor={cuenta.enCurso} detalle={`${cuenta.entregados} entregados`} />
-            <Indicador icono="billete" etiqueta="Señas cobradas" valor={pesos(resumen?.senasCobradas)} detalle={`${resumen?.trabajos || 0} trabajos`} />
-            <Indicador icono="grafico" etiqueta="Aceptación" valor={cuenta.aceptacion} detalle="de tus presupuestos" />
-            <Indicador icono="lista" etiqueta="Total presupuestado" valor={pesos(cuenta.facturado)} detalle="en trabajos aceptados" />
-            <Indicador icono="escudo" etiqueta="Comisión Viruta" valor={pesos(resumen?.comision)} />
-          </div>
-
-          <div className="dos-cuenta">
-            <section className="tarjeta lista">
-              <div className="lista-cabeza"><h3>Últimos pedidos</h3><Link to="/panel" className="boton plano">Abrir bandeja</Link></div>
-              {pedidos.length === 0 && <p className="tenue vacio">Todavía no te llegaron pedidos.</p>}
-              {pedidos.slice(0, 5).map((p) => (
-                <Fila key={p.id} icono="bandeja" titulo={p.diseno.nombre} a={'/panel?pedido=' + p.id}
-                  detalle={`${p.cliente?.nombre || ''} · ${medidas(p.diseno)}`} extra={<Chip estado={p.estado} />} />
-              ))}
-            </section>
-
-            <div className="pila">
-              <section className="tarjeta datos">
-                <h3>Pedidos por estado</h3>
-                {estados.length === 0 && <p className="tenue">Sin movimiento todavía.</p>}
-                <ul className="barras">
-                  {estados.map(([e, n]) => (
-                    <li key={e}>
-                      <span>{ESTADOS[e].etiqueta}</span>
-                      <span className="barra-pista"><span style={{ width: `${(n / maximo) * 100}%` }} /></span>
-                      <strong>{n}</strong>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-              <section className="tarjeta datos">
-                <h3>Perfil del taller</h3>
-                <div className="progreso"><span style={{ width: `${(completo / 4) * 100}%` }} /></div>
-                <p className="tenue chico">{completo} de 4 datos cargados. {perfil?.visible ? 'Aparecés en el mapa.' : 'Completalo para aparecer en el mapa.'}</p>
-                <Link to="/cuenta/perfil" className="boton claro" style={{ marginTop: 12 }}><Icono nombre="martillo" />Ver mi taller</Link>
-              </section>
-            </div>
-          </div>
-        </>
-      )}
+      {seccion === 'resumen' && <TableroTaller pedidos={pedidos} resumen={resumen} perfil={perfil} zona={zona} />}
 
       {seccion === 'perfil' && perfil && (
         <>
@@ -388,6 +345,15 @@ export default function Cuenta() {
   const { seccion } = useParams();
   const movil = usarMovil();
   const navegar = useNavigate();
+  const [plegado, setPlegado] = useState(() => {
+    try { const v = localStorage.getItem('viruta.menuCuenta'); return v === null ? null : v === 'plegado'; } catch { return null; }
+  });
+  const plegar = () => {
+    const tablet = typeof matchMedia === 'function' && matchMedia('(max-width: 1023px)').matches;
+    const nuevo = !(plegado ?? tablet);
+    setPlegado(nuevo);
+    try { localStorage.setItem('viruta.menuCuenta', nuevo ? 'plegado' : 'abierto'); } catch { /* sin almacenamiento */ }
+  };
   if (!sesion) return <Navigate to="/ingresar?volver=/cuenta" replace />;
   const secciones = SECCIONES[sesion.rol] || SECCIONES.CLIENTE;
   const actual = secciones.find(([id]) => id === seccion);
@@ -396,7 +362,7 @@ export default function Cuenta() {
   const taller = sesion.rol === 'CARPINTERIA';
 
   return (
-    <main className="cuenta">
+    <main className={'cuenta' + (plegado === true ? ' plegado' : plegado === false ? ' desplegado' : '')}>
       {movil && (
         <div className="cuenta-volver">
           <button className="volver-circulo" aria-label="Volver a la cuenta" onClick={() => navegar('/cuenta')}>
@@ -407,11 +373,16 @@ export default function Cuenta() {
         </div>
       )}
       <aside className="cuenta-menu">
-        <p className="cuenta-grupo">{taller ? 'Mi taller' : 'Mi cuenta'}</p>
+        <div className="cuenta-grupo">
+          <span>{taller ? 'Mi taller' : 'Mi cuenta'}</span>
+          <button className="plegar" onClick={plegar} aria-label="Plegar o desplegar el menú" title="Plegar o desplegar el menú">
+            <Icono nombre="panel" tam={18} />
+          </button>
+        </div>
         <nav aria-label="Secciones de la cuenta">
           {secciones.map(([id, icono, nombre]) => (
-            <NavLink key={id} to={'/cuenta/' + id} className={({ isActive }) => (isActive ? 'activo' : '')}>
-              <Icono nombre={icono} tam={19} />{nombre}
+            <NavLink key={id} to={'/cuenta/' + id} title={nombre} className={({ isActive }) => (isActive ? 'activo' : '')}>
+              <Icono nombre={icono} tam={19} /><span>{nombre}</span>
             </NavLink>
           ))}
         </nav>
