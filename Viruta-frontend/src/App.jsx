@@ -9,6 +9,7 @@ import MisPedidos from './paginas/MisPedidos.jsx';
 import Panel from './paginas/Panel.jsx';
 import PagoSimulado from './paginas/PagoSimulado.jsx';
 import Metricas from './paginas/Metricas.jsx';
+import Cuenta from './paginas/Cuenta.jsx';
 import { aplicarTema } from './componentes/Comunes.jsx';
 import { Icono } from './componentes/Iconos.jsx';
 import { guardarTema, seguirSistema, temaActual } from './lib/tema.js';
@@ -55,6 +56,9 @@ function Usuario({ sesion, alSalir }) {
             <span className="avatar" aria-hidden="true">{iniciales(sesion.nombre)}</span>
             <div><strong>{nombre}</strong><span>{ROLES[sesion.rol] || sesion.rol}</span></div>
           </div>
+          <Link className="item" role="menuitem" to="/cuenta" onClick={() => setAbierto(false)}>
+            <Icono nombre="persona" />{sesion.rol === 'CARPINTERIA' ? 'Mi taller' : 'Mi cuenta'}
+          </Link>
           <button className="item" role="menuitem" onClick={() => { setAbierto(false); alSalir(); }}>
             <Icono nombre="salir" />Salir
           </button>
@@ -68,6 +72,11 @@ function Usuario({ sesion, alSalir }) {
 function BotonTema() {
   const [tema, setTema] = useState(temaActual());
   useEffect(() => seguirSistema(setTema), []);
+  useEffect(() => {
+    const oir = () => setTema(temaActual());
+    window.addEventListener('viruta-tema', oir);
+    return () => window.removeEventListener('viruta-tema', oir);
+  }, []);
   const oscuro = tema === 'oscuro';
   const cambiar = () => {
     const nuevo = oscuro ? 'claro' : 'oscuro';
@@ -105,6 +114,10 @@ export default function App() {
         <span className="mancha m1" />
         <span className="mancha m2" />
         <span className="mancha m3" />
+        <span className="luz l1" />
+        <span className="luz l2" />
+        <span className="luz l3" />
+        <span className="luz l4" />
       </div>
       <header className="barra">
         <Link to="/" className="marca" aria-label="Viruta, inicio">
@@ -129,7 +142,9 @@ export default function App() {
         {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={activo}><Icono nombre="bandeja" tam={22} /><span>Pedidos</span></NavLink>}
         {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={activo}><Icono nombre="martillo" tam={22} /><span>Panel</span></NavLink>}
         {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={activo}><Icono nombre="grafico" tam={22} /><span>Métricas</span></NavLink>}
-        {!sesion && <NavLink to="/ingresar" className={activo}><Icono nombre="persona" tam={22} /><span>Ingresar</span></NavLink>}
+        {sesion
+          ? <NavLink to="/cuenta" className={activo}><Icono nombre="persona" tam={22} /><span>Cuenta</span></NavLink>
+          : <NavLink to="/ingresar" className={activo}><Icono nombre="persona" tam={22} /><span>Ingresar</span></NavLink>}
       </nav>
       <Routes>
         <Route path="/" element={<Inicio />} />
@@ -139,6 +154,8 @@ export default function App() {
         <Route path="/mis-pedidos" element={<Solo rol="CLIENTE"><MisPedidos /></Solo>} />
         <Route path="/pago-simulado" element={<Solo rol="CLIENTE"><PagoSimulado /></Solo>} />
         <Route path="/panel" element={<Solo rol="CARPINTERIA"><Panel /></Solo>} />
+        <Route path="/cuenta" element={<Cuenta />} />
+        <Route path="/cuenta/:seccion" element={<Cuenta />} />
         <Route path="/metricas" element={<Solo rol="ADMIN"><Metricas /></Solo>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

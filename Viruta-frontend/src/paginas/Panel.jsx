@@ -159,7 +159,7 @@ export default function Panel() {
   const [parametros, setParametros] = useSearchParams();
   const abierto = parametros.get('pedido');
   const [perfil, setPerfil] = useState(null);
-  const [editandoPerfil, setEditandoPerfil] = useState(false);
+  const [editandoPerfil, setEditandoPerfil] = useState(parametros.has('editar'));
   const [pedidos, setPedidos] = useState([]);
   const [resumen, setResumen] = useState(null);
   const [pestana, setPestana] = useState(0);

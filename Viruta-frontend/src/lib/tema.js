@@ -30,6 +30,18 @@ export function guardarTema(tema) {
     // Sin almacenamiento: el tema dura hasta recargar.
   }
   aplicarTemaVisual(tema);
+  window.dispatchEvent(new Event('viruta-tema'));
+}
+
+/** Vuelve a seguir el tema del sistema. */
+export function olvidarTema() {
+  try {
+    localStorage.removeItem(CLAVE);
+  } catch {
+    // nada
+  }
+  aplicarTemaVisual();
+  window.dispatchEvent(new Event('viruta-tema'));
 }
 
 /** Escucha los cambios del sistema mientras la persona no haya elegido un tema. */

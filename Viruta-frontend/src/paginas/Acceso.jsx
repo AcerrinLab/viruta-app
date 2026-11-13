@@ -34,7 +34,7 @@ export default function Acceso() {
       const datos = nuevo
         ? await api('/api/auth/registro', { metodo: 'POST', cuerpo: { nombre, email, clave, rol, consentimiento: acepta } })
         : await api('/api/auth/ingreso', { metodo: 'POST', cuerpo: { email, clave } });
-      entrar(datos);
+      entrar({ ...datos, email });
       const volver = parametros.get('volver');
       if (datos.rol === 'CARPINTERIA') navegar('/panel');
       else if (datos.rol === 'ADMIN') navegar('/metricas');
