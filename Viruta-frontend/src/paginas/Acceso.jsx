@@ -4,6 +4,7 @@ import { api } from '../api.js';
 import { useSesion } from '../App.jsx';
 import { Selector, aplicarTema } from '../componentes/Comunes.jsx';
 import { IlustracionCliente, IlustracionTaller } from '../componentes/Ilustraciones.jsx';
+import { Icono } from '../componentes/Iconos.jsx';
 
 /** Ingreso y registro con rol Cliente o Carpinteria (RF-12). */
 export default function Acceso() {
@@ -83,7 +84,7 @@ export default function Acceso() {
             </label>
           )}
           {error && <p className="nota error">{error}</p>}
-          <button className="boton ancho" disabled={enviando || (nuevo && !acepta)}>{nuevo ? 'Crear cuenta' : 'Ingresar'}</button>
+          <button className="boton ancho" disabled={enviando || (nuevo && !acepta)}>{nuevo ? 'Crear cuenta' : 'Ingresar'}<Icono nombre="flecha" /></button>
           <p className="acceso-cambio">
             {nuevo ? '¿Ya tenés cuenta?' : '¿Todavía no tenés cuenta?'}
             <button type="button" onClick={() => { setNuevo(!nuevo); setError(''); }}>

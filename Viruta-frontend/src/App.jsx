@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { guardarSesion, leerSesion } from './api.js';
 import Inicio from './paginas/Inicio.jsx';
@@ -10,6 +10,7 @@ import Panel from './paginas/Panel.jsx';
 import PagoSimulado from './paginas/PagoSimulado.jsx';
 import Metricas from './paginas/Metricas.jsx';
 import { aplicarTema } from './componentes/Comunes.jsx';
+import { Icono } from './componentes/Iconos.jsx';
 
 const Sesion = createContext(null);
 export const useSesion = () => useContext(Sesion);
@@ -19,6 +20,47 @@ function Solo({ rol, children }) {
   if (!sesion) return <Navigate to="/ingresar" replace />;
   if (sesion.rol !== rol) return <Navigate to="/" replace />;
   return children;
+}
+
+const ROLES = { CLIENTE: 'Cliente', CARPINTERIA: 'Carpintería', ADMIN: 'Administración' };
+
+function iniciales(nombre = '') {
+  const partes = nombre.trim().split(/\s+/).filter(Boolean);
+  return ((partes[0]?.[0] || '') + (partes[1]?.[0] || '')).toUpperCase() || 'V';
+}
+
+/** Quien esta logueado: avatar con iniciales y un menu con la salida. */
+function Usuario({ sesion, alSalir }) {
+  const [abierto, setAbierto] = useState(false);
+  const caja = useRef(null);
+  useEffect(() => {
+    if (!abierto) return;
+    const cerrar = (e) => { if (!caja.current?.contains(e.target)) setAbierto(false); };
+    const tecla = (e) => e.key === 'Escape' && setAbierto(false);
+    document.addEventListener('pointerdown', cerrar);
+    document.addEventListener('keydown', tecla);
+    return () => { document.removeEventListener('pointerdown', cerrar); document.removeEventListener('keydown', tecla); };
+  }, [abierto]);
+  const nombre = sesion.nombre || 'Mi cuenta';
+  return (
+    <div className="usuario" ref={caja}>
+      <button className="usuario-boton" aria-haspopup="menu" aria-expanded={abierto} onClick={() => setAbierto(!abierto)}>
+        <span className="avatar" aria-hidden="true">{iniciales(sesion.nombre)}</span>
+        <span className="usuario-nombre">{nombre.split(' ')[0]}</span>
+      </button>
+      {abierto && (
+        <div className="usuario-menu" role="menu">
+          <div className="cabecera">
+            <span className="avatar" aria-hidden="true">{iniciales(sesion.nombre)}</span>
+            <div><strong>{nombre}</strong><span>{ROLES[sesion.rol] || sesion.rol}</span></div>
+          </div>
+          <button className="item" role="menuitem" onClick={() => { setAbierto(false); alSalir(); }}>
+            <Icono nombre="salir" />Salir
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function App() {
@@ -59,7 +101,7 @@ export default function App() {
           {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={activo}>Mis pedidos</NavLink>}
           {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={activo}>Panel</NavLink>}
           {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={activo}>Métricas</NavLink>}
-          {sesion ? <button onClick={salir}>Salir</button> : <NavLink to="/ingresar" className={activo}>Ingresar</NavLink>}
+          {sesion ? <Usuario sesion={sesion} alSalir={salir} /> : <NavLink to="/ingresar" className={activo}>Ingresar</NavLink>}
         </nav>
       </header>
       <Routes>

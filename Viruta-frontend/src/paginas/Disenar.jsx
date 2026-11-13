@@ -6,6 +6,7 @@ import Visor3D from '../componentes/Visor3D.jsx';
 import VistaAR from '../componentes/VistaAR.jsx';
 import { CampoCm, GuiaMedir, Materiales, Medida, Pasos, Selector } from '../componentes/Comunes.jsx';
 import { COLORES, MATERIALES, PLANTILLAS, aSolicitud, disenoInicial, tieneEspacio } from '../lib/diseno.js';
+import { Icono } from '../componentes/Iconos.jsx';
 
 const DIBUJOS = {
   ESTANTE: 'M14 6v36M34 6v36M14 8h20M14 24h20M14 40h20',
@@ -109,7 +110,7 @@ export default function Disenar() {
       <Pasos hechos={paso} total={3} />
       <div className="fila entre">
         <h2>{paso === 2 ? 'Medí y ajustá' : 'Qué comprar'}</h2>
-        <button className="boton plano" onClick={() => (paso === 3 ? setPaso(2) : setPaso(1))}>Volver</button>
+        <button className="boton plano" onClick={() => (paso === 3 ? setPaso(2) : setPaso(1))}><Icono nombre="volver" />Volver</button>
       </div>
       {error && <p className="nota error">{error}</p>}
 
@@ -121,14 +122,14 @@ export default function Disenar() {
             </div>
             {avisos.map((a, i) => <p key={i} className="nota aviso">{a.mensaje}</p>)}
             {tieneEspacio(diseno) && !noEntra && calculo && <p className="nota">Entra en tu espacio.</p>}
-            <button className="boton claro" disabled={!calculo} onClick={() => setAr(true)}>Verlo en mi espacio</button>
+            <button className="boton claro" disabled={!calculo} onClick={() => setAr(true)}><Icono nombre="visor" />Verlo en mi espacio</button>
           </div>
 
           <div className="pila">
             <div className="tarjeta pila">
               <div className="fila entre">
                 <h3>Tu espacio</h3>
-                <button className="boton plano" style={{ minHeight: 36, padding: '0 8px' }} onClick={() => setGuia(true)}>Cómo medir</button>
+                <button className="boton plano" onClick={() => setGuia(true)}><Icono nombre="regla" />Cómo medir</button>
               </div>
               <div className="tres" style={{ gridTemplateColumns: '1fr 1fr' }}>
                 <CampoCm etiqueta="Ancho" valor={diseno.espacioAncho} alCambiar={(v) => cambiar({ espacioAncho: v })} />
@@ -165,7 +166,7 @@ export default function Disenar() {
               </div>
             </div>
 
-            <button className="boton" disabled={!calculo || !!error} onClick={() => setPaso(3)}>Ver qué comprar</button>
+            <button className="boton" disabled={!calculo || !!error} onClick={() => setPaso(3)}><Icono nombre="lista" />Ver qué comprar</button>
           </div>
         </div>
       )}
@@ -175,8 +176,8 @@ export default function Disenar() {
           <Materiales lista={calculo?.materiales} />
           {guardado && <p className="nota">Guardado en tus proyectos.</p>}
           <div className="fila">
-            <button className="boton" disabled={!calculo} onClick={pedir}>Pedir presupuesto</button>
-            <button className="boton claro" disabled={!calculo} onClick={guardar}>Guardar</button>
+            <button className="boton" disabled={!calculo} onClick={pedir}><Icono nombre="enviar" />Pedir presupuesto</button>
+            <button className="boton claro" disabled={!calculo} onClick={guardar}><Icono nombre="guardar" />Guardar</button>
           </div>
         </div>
       )}

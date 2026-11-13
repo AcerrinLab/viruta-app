@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../api.js';
 import { useSesion } from '../App.jsx';
 import { Selector, aplicarTema } from '../componentes/Comunes.jsx';
+import { Icono } from '../componentes/Iconos.jsx';
 
 /** Portada con la lista de espera y su contador real (RF-20). */
 export default function Inicio() {
@@ -43,8 +44,8 @@ export default function Inicio() {
           Diseñalo, miralo en tu casa con la cámara y encargalo a una carpintería de Jujuy.
         </p>
         <div className="fila">
-          <Link to="/disenar" className="boton">Diseñar mi mueble</Link>
-          <Link to="/ingresar?rol=CARPINTERIA" className="boton claro">Soy carpintería</Link>
+          <Link to="/disenar" className="boton"><Icono nombre="cubo" />Diseñar mi mueble</Link>
+          <Link to="/ingresar?rol=CARPINTERIA" className="boton claro"><Icono nombre="martillo" />Soy carpintería</Link>
         </div>
       </section>
 
@@ -65,7 +66,7 @@ export default function Inicio() {
             <span className="chico">Acepto que Viruta guarde mi email para avisarme.</span>
           </label>
           {mensaje && <p className={'nota ' + mensaje.tono}>{mensaje.texto}</p>}
-          <button className="boton" disabled={!acepta}>Anotarme</button>
+          <button className="boton" disabled={!acepta}><Icono nombre="campana" />Anotarme</button>
         </form>
       </section>
     </main>

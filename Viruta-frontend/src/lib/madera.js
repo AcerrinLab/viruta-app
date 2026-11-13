@@ -18,10 +18,10 @@ function rgb(hex) {
 function ondas(x, y, semilla) {
   const t = (2 * Math.PI) / TAM;
   return (
-    Math.sin(t * (1 * x) + semilla) * 6 +
-    Math.sin(t * (3 * x + 1 * y) + semilla * 2.1) * 3 +
+    Math.sin(t * (1 * x) + semilla) * 3.5 +
+    Math.sin(t * (3 * x + 1 * y) + semilla * 2.1) * 1.8 +
     Math.sin(t * (7 * x - 1 * y) + semilla * 0.7) * 1.2 +
-    Math.sin(t * (2 * y) + semilla * 3.3) * 5
+    Math.sin(t * (2 * y) + semilla * 3.3) * 2.5
   );
 }
 

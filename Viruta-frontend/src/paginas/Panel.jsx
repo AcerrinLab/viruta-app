@@ -6,6 +6,7 @@ import { Chip, Materiales, Selector } from '../componentes/Comunes.jsx';
 import { ACCION_CARPINTERIA, siguienteDeCarpinteria } from '../lib/estados.js';
 import { COLORES, MATERIALES } from '../lib/diseno.js';
 import { medidas, mmACm, pesos } from '../lib/unidades.js';
+import { Icono } from '../componentes/Iconos.jsx';
 
 const PESTANAS = [
   ['Nuevos', ['PENDIENTE']],
@@ -132,7 +133,7 @@ function Detalle({ id, alCambiar, alCerrar }) {
           </label>
           <div className="fila entre">
             <div className="dato"><span className="tenue">Total a cobrar</span><span className="numero">{pesos(total)}</span></div>
-            <button className="boton">Enviar presupuesto</button>
+            <button className="boton"><Icono nombre="enviar" />Enviar presupuesto</button>
           </div>
         </form>
       )}
@@ -148,7 +149,7 @@ function Detalle({ id, alCambiar, alCerrar }) {
       {siguiente && <button className="boton" onClick={() => accion('estado', { estado: siguiente })}>{ACCION_CARPINTERIA[siguiente]}</button>}
 
       <Materiales lista={p.calculo.materiales} />
-      <button className="boton plano" onClick={alCerrar}>Volver a la bandeja</button>
+      <button className="boton plano" onClick={alCerrar}><Icono nombre="volver" />Volver a la bandeja</button>
     </div>
   );
 }
