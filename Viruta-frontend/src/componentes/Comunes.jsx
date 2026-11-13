@@ -137,10 +137,10 @@ export function GuiaMedir({ alCerrar }) {
       <div className="dialogo">
         <h2>Cómo medir</h2>
         <svg viewBox="0 0 320 210" role="img" aria-label="Esquema del espacio con ancho, alto y profundidad adelante y atrás">
-          <polygon points="60,40 260,40 290,70 290,190 30,190 30,70" fill="#F5F2EB" stroke="#D8D2C6" />
-          <polygon points="60,40 260,40 260,150 60,150" fill="#fff" stroke="#d8d2c6" />
-          <line x1="60" y1="150" x2="30" y2="190" stroke="#d8d2c6" />
-          <line x1="260" y1="150" x2="290" y2="190" stroke="#d8d2c6" />
+          <polygon points="60,40 260,40 290,70 290,190 30,190 30,70" fill="var(--suave)" stroke="var(--borde-medio)" />
+          <polygon points="60,40 260,40 260,150 60,150" fill="var(--tarjeta)" stroke="var(--borde-medio)" />
+          <line x1="60" y1="150" x2="30" y2="190" stroke="var(--borde-medio)" />
+          <line x1="260" y1="150" x2="290" y2="190" stroke="var(--borde-medio)" />
           <g stroke="var(--acento)" strokeWidth="2.5" strokeLinecap="round">
             <line x1="70" y1="140" x2="250" y2="140" />
             <line x1="76" y1="50" x2="76" y2="132" />

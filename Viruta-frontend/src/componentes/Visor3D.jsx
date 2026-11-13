@@ -39,7 +39,7 @@ function texturaPiso(lado) {
   const n = Math.ceil(px / 2 / paso);
   for (let k = -n; k <= n; k++) {
     const fuerte = k % 5 === 0;
-    ctx.strokeStyle = fuerte ? 'rgba(110, 78, 55, 0.30)' : 'rgba(110, 78, 55, 0.13)';
+    ctx.strokeStyle = fuerte ? 'rgba(150, 118, 88, 0.38)' : 'rgba(150, 118, 88, 0.17)';
     ctx.lineWidth = fuerte ? 2 : 1;
     const c = Math.round(px / 2 + k * paso) + 0.5;
     ctx.beginPath(); ctx.moveTo(c, 0); ctx.lineTo(c, px); ctx.stroke();

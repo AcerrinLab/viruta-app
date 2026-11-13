@@ -27,6 +27,8 @@
   --brillo-2: rgba(212, 163, 115, 0.14);
 
   /* Alias para no tocar los componentes que ya usan estos nombres */
+  --base: #FFFFFF;
+  --sobre-acento: #FFFFFF;
   --verde: var(--acento);
   --verde-claro: var(--acento-suave);
 
@@ -132,7 +134,7 @@ a { color: inherit; }
 }
 .barra nav a:hover, .barra nav button:hover { color: var(--texto); }
 .barra nav a.activo {
-  color: #fff;
+  color: var(--sobre-acento);
   background: var(--acento);
   box-shadow: 0 3px 10px -4px var(--acento);
 }
@@ -169,14 +171,14 @@ main { max-width: 1080px; margin: 0 auto; padding: 28px 16px 80px; }
 /* ---------- Botones (estilo iOS: relleno suave, texto e icono en el color del rol) ---------- */
 .boton {
   min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0;
-  background: color-mix(in srgb, var(--acento) 11%, #fff 89%);
+  background: color-mix(in srgb, var(--acento) 11%, var(--base) 89%);
   color: var(--acento); font: inherit; font-weight: 600; letter-spacing: -0.005em; cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
   transition: background-color .2s var(--curva), transform .12s var(--curva), opacity .2s;
 }
 .boton .icono { flex: none; }
-.boton:hover { background: color-mix(in srgb, var(--acento) 16%, #fff 84%); }
-.boton:active { transform: scale(.97); background: color-mix(in srgb, var(--acento) 20%, #fff 80%); }
+.boton:hover { background: color-mix(in srgb, var(--acento) 16%, var(--base) 84%); }
+.boton:active { transform: scale(.97); background: color-mix(in srgb, var(--acento) 20%, var(--base) 80%); }
 .boton.claro { background: rgba(118, 118, 128, .12); color: var(--acento); }
 .boton.claro:hover { background: rgba(118, 118, 128, .18); }
 .boton.plano { background: transparent; color: var(--acento); min-height: 40px; padding: 0 10px; }
@@ -228,7 +230,7 @@ input[type='range'] { width: 100%; accent-color: var(--acento); min-height: 28px
   transition: color .35s var(--curva);
 }
 .selector button:hover { color: var(--texto); }
-.selector button[aria-checked="true"] { color: #fff; }
+.selector button[aria-checked="true"] { color: var(--sobre-acento); }
 .selector .gota {
   position: absolute; top: 5px; bottom: 5px; left: 0; z-index: 0; border-radius: 999px; pointer-events: none;
   background: var(--acento);
@@ -252,7 +254,7 @@ input[type='range'] { width: 100%; accent-color: var(--acento); min-height: 28px
 .opcion:hover { color: var(--texto); }
 .opcion:disabled { opacity: .45; cursor: not-allowed; }
 .opcion.elegida {
-  color: #fff; border-color: transparent;
+  color: var(--sobre-acento); border-color: transparent;
   background: var(--acento);
   box-shadow: 0 3px 10px -4px var(--acento);
 }
@@ -361,7 +363,7 @@ model-viewer { width: 100%; height: min(70vh, 560px); background: linear-gradien
 }
 .avatar {
   width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none;
-  background: var(--acento); color: #fff; font-size: .8rem; font-weight: 700; letter-spacing: .02em;
+  background: var(--acento); color: var(--sobre-acento); font-size: .8rem; font-weight: 700; letter-spacing: .02em;
 }
 .usuario-nombre { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .usuario-menu {
@@ -405,3 +407,118 @@ model-viewer { width: 100%; height: min(70vh, 560px); background: linear-gradien
   position: absolute; right: 14px; bottom: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 6px;
   font-size: .75rem; font-weight: 600; color: var(--tenue);
 }
+
+/* ---------- Tema oscuro ---------- */
+html[data-tema="oscuro"] { color-scheme: dark; }
+html[data-tema="oscuro"] body {
+  --fondo: #131513; --tarjeta: #1C1F1C; --suave: #222622; --tinte: #282C28;
+  --borde: #2E332E; --borde-medio: #3A403A;
+  --texto: #ECEAE4; --texto-medio: #C3C6BF; --tenue: #949A92;
+  --aviso: #F0C37A; --aviso-fondo: rgba(240,195,122,.12); --error: #F0968A;
+  --acento: #8DBF9F; --acento-hover: #A3CDB2; --acento-activo: #79AD8C;
+  --acento-suave: rgba(141,191,159,.15); --acento-tinta: #B9DBC5;
+  --ambiente: #111412;
+  --brillo-1: rgba(77, 140, 102, 0.22); --brillo-2: rgba(212, 163, 115, 0.10);
+  --base: #1A1D1A; --sobre-acento: #0F1410;
+  --vidrio: linear-gradient(135deg, rgba(44,48,44,.62) 0%, rgba(30,33,30,.42) 100%);
+  --vidrio-fuerte: linear-gradient(135deg, rgba(38,42,38,.92) 0%, rgba(28,31,28,.84) 100%);
+  --vidrio-borde: rgba(255,255,255,.09);
+  --vidrio-sombra: inset 0 1px 0 rgba(255,255,255,.07), 0 10px 30px -14px rgba(0,0,0,.6);
+}
+html[data-tema="oscuro"] body[data-rol="taller"] {
+  --acento: #D9AE82; --acento-hover: #E6C29C; --acento-activo: #C99B6C;
+  --acento-suave: rgba(217,174,130,.15); --acento-tinta: #EBCBA6;
+  --ambiente: #15120F;
+  --brillo-1: rgba(160, 112, 72, 0.24); --brillo-2: rgba(212, 163, 115, 0.12);
+  --sobre-acento: #1A120B;
+}
+html[data-tema="oscuro"] .tarjeta::before,
+html[data-tema="oscuro"] .dialogo::before,
+html[data-tema="oscuro"] .vidrio::before { background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 42%); }
+html[data-tema="oscuro"] .mancha.m2 { background: rgba(212,163,115,.12); }
+html[data-tema="oscuro"] .barra { background: linear-gradient(180deg, rgba(20,22,20,.78), rgba(20,22,20,.5)); border-bottom-color: rgba(255,255,255,.06); }
+html[data-tema="oscuro"] .barra nav,
+html[data-tema="oscuro"] .selector,
+html[data-tema="oscuro"] .opcion {
+  background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 8px 22px -14px rgba(0,0,0,.7);
+}
+html[data-tema="oscuro"] .selector::before { background: none; }
+html[data-tema="oscuro"] .opcion.elegida { background: var(--acento); }
+html[data-tema="oscuro"] .tarjeta.elegible:hover { border-color: rgba(255,255,255,.16); box-shadow: 0 16px 34px -16px rgba(0,0,0,.7); }
+html[data-tema="oscuro"] .boton.claro { background: rgba(118,118,128,.24); }
+html[data-tema="oscuro"] .boton.claro:hover { background: rgba(118,118,128,.32); }
+html[data-tema="oscuro"] input[type='text'], html[data-tema="oscuro"] input[type='email'], html[data-tema="oscuro"] input[type='password'],
+html[data-tema="oscuro"] input[type='tel'], html[data-tema="oscuro"] input[type='number'], html[data-tema="oscuro"] select {
+  background: rgba(0,0,0,.22); border-color: var(--borde-medio); color: var(--texto);
+}
+html[data-tema="oscuro"] input:focus, html[data-tema="oscuro"] select:focus { background: rgba(0,0,0,.3); }
+html[data-tema="oscuro"] .pasos span { background: rgba(255,255,255,.1); }
+html[data-tema="oscuro"] .chip { background: rgba(255,255,255,.07); }
+html[data-tema="oscuro"] .nota { border-color: rgba(255,255,255,.06); }
+html[data-tema="oscuro"] .nota.error { background: rgba(240,150,138,.12); }
+html[data-tema="oscuro"] th, html[data-tema="oscuro"] td { border-bottom-color: rgba(255,255,255,.07); }
+html[data-tema="oscuro"] .color { box-shadow: 0 0 0 1px rgba(255,255,255,.14), inset 0 2px 4px rgba(255,255,255,.2), inset 0 -3px 6px rgba(0,0,0,.3); }
+html[data-tema="oscuro"] .color.elegida { box-shadow: 0 0 0 3px var(--ambiente), 0 0 0 5px var(--acento); }
+html[data-tema="oscuro"] .escenario .visor, html[data-tema="oscuro"] .visor, html[data-tema="oscuro"] model-viewer {
+  background: radial-gradient(110% 80% at 50% 0%, #2C302B 0%, rgba(44,48,43,0) 60%), linear-gradient(180deg, #20231F 0%, #171916 100%);
+}
+html[data-tema="oscuro"] .escenario::after { box-shadow: inset 0 0 60px rgba(0,0,0,.35); }
+html[data-tema="oscuro"] .escenario .cota { background: rgba(20,22,20,.6); border-color: rgba(255,255,255,.08); }
+html[data-tema="oscuro"] .acceso-arte {
+  background: radial-gradient(70% 60% at 80% 10%, rgba(255,255,255,.06), transparent 70%), linear-gradient(160deg, #1F2620 0%, #262119 100%);
+}
+html[data-tema="oscuro"] body[data-rol="taller"] .acceso-arte { background: radial-gradient(70% 60% at 80% 10%, rgba(255,255,255,.06), transparent 70%), linear-gradient(160deg, #2A2119 0%, #1E1A15 100%); }
+html[data-tema="oscuro"] .acceso-arte .ilustracion { filter: brightness(.88) saturate(.95); }
+html[data-tema="oscuro"] .usuario-menu .cabecera { border-bottom-color: rgba(255,255,255,.07); }
+html[data-tema="oscuro"] .velo { background: rgba(0,0,0,.5); }
+
+/* Boton de tema */
+.tema-boton {
+  width: 40px; min-height: 40px; padding: 0 !important; justify-content: center;
+}
+.tema-boton .icono { transition: transform .45s var(--rebote); }
+.tema-boton:active .icono { transform: rotate(-30deg) scale(.9); }
+
+/* ---------- Version mobile ---------- */
+.pestanas-inferiores { display: none; }
+@media (max-width: 767px) {
+  .solo-escritorio { display: none !important; }
+  .barra { padding: 8px 12px; }
+  .barra nav { gap: 4px; }
+  main { padding: 18px 14px calc(104px + env(safe-area-inset-bottom)); }
+  h1 { font-size: 1.9rem; }
+  h2 { font-size: 1.25rem; }
+  .tarjeta { padding: 16px; }
+  .portada { padding-top: 20px; }
+  .portada .fila .boton { flex: 1 1 100%; }
+
+  .pestanas-inferiores {
+    position: fixed; z-index: 15; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom));
+    display: flex; justify-content: space-around; gap: 4px; padding: 6px; border-radius: 26px;
+    background: var(--vidrio-fuerte); border: 1px solid var(--vidrio-borde);
+    -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: var(--vidrio-sombra), 0 14px 34px -14px rgba(28,28,26,.35);
+  }
+  .pestanas-inferiores a {
+    flex: 1; display: grid; justify-items: center; gap: 2px; padding: 7px 4px 6px; border-radius: 20px;
+    text-decoration: none; color: var(--tenue); font-size: .7rem; font-weight: 600;
+    transition: color .25s var(--curva), background-color .25s var(--curva);
+  }
+  .pestanas-inferiores a.activo { color: var(--acento); background: var(--acento-suave); }
+
+  /* Editor: el visor queda fijo arriba y los controles pasan por debajo */
+  .pegado { display: contents; }
+  .pegado > .tarjeta.sin-relleno { position: sticky; top: 60px; z-index: 4; box-shadow: var(--vidrio-sombra), 0 12px 24px -16px rgba(28,28,26,.35); }
+  .pegado .visor { height: 250px !important; }
+  .escenario .cota { padding: 4px 8px; font-size: .72rem; }
+  .escenario .pista { display: none; }
+
+  .dialogo { max-height: 86vh; }
+  .velo { align-items: end; padding: 10px; }
+  .usuario-menu { right: -4px; }
+}
+
+/* La marca mantiene sus colores de siempre en el tema oscuro */
+html[data-tema="oscuro"] .marca .fondo-marca { fill: #2B4C38; }
+html[data-tema="oscuro"] body[data-rol="taller"] .marca .fondo-marca { fill: #6E4E37; }

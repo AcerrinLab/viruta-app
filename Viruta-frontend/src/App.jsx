@@ -11,6 +11,7 @@ import PagoSimulado from './paginas/PagoSimulado.jsx';
 import Metricas from './paginas/Metricas.jsx';
 import { aplicarTema } from './componentes/Comunes.jsx';
 import { Icono } from './componentes/Iconos.jsx';
+import { guardarTema, seguirSistema, temaActual } from './lib/tema.js';
 
 const Sesion = createContext(null);
 export const useSesion = () => useContext(Sesion);
@@ -63,6 +64,23 @@ function Usuario({ sesion, alSalir }) {
   );
 }
 
+/** Boton para pasar de claro a oscuro y al reves. */
+function BotonTema() {
+  const [tema, setTema] = useState(temaActual());
+  useEffect(() => seguirSistema(setTema), []);
+  const oscuro = tema === 'oscuro';
+  const cambiar = () => {
+    const nuevo = oscuro ? 'claro' : 'oscuro';
+    guardarTema(nuevo);
+    setTema(nuevo);
+  };
+  return (
+    <button className="tema-boton" onClick={cambiar} aria-label={oscuro ? 'Usar tema claro' : 'Usar tema oscuro'} title={oscuro ? 'Tema claro' : 'Tema oscuro'}>
+      <Icono nombre={oscuro ? 'sol' : 'luna'} tam={19} />
+    </button>
+  );
+}
+
 export default function App() {
   const [sesion, setSesion] = useState(leerSesion());
   const navegar = useNavigate();
@@ -97,13 +115,22 @@ export default function App() {
           <span>Viruta</span>
         </Link>
         <nav>
-          {(!sesion || sesion.rol === 'CLIENTE') && <NavLink to="/disenar" className={activo}>Diseñar</NavLink>}
-          {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={activo}>Mis pedidos</NavLink>}
-          {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={activo}>Panel</NavLink>}
-          {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={activo}>Métricas</NavLink>}
-          {sesion ? <Usuario sesion={sesion} alSalir={salir} /> : <NavLink to="/ingresar" className={activo}>Ingresar</NavLink>}
+          {(!sesion || sesion.rol === 'CLIENTE') && <NavLink to="/disenar" className={(e) => 'solo-escritorio ' + activo(e)}>Diseñar</NavLink>}
+          {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={(e) => 'solo-escritorio ' + activo(e)}>Mis pedidos</NavLink>}
+          {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={(e) => 'solo-escritorio ' + activo(e)}>Panel</NavLink>}
+          {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={(e) => 'solo-escritorio ' + activo(e)}>Métricas</NavLink>}
+          <BotonTema />
+          {sesion ? <Usuario sesion={sesion} alSalir={salir} /> : <NavLink to="/ingresar" className={(e) => 'solo-escritorio ' + activo(e)}>Ingresar</NavLink>}
         </nav>
       </header>
+      <nav className="pestanas-inferiores" aria-label="Secciones">
+        <NavLink to="/" end className={activo}><Icono nombre="casa" tam={22} /><span>Inicio</span></NavLink>
+        {(!sesion || sesion.rol === 'CLIENTE') && <NavLink to="/disenar" className={activo}><Icono nombre="cubo" tam={22} /><span>Diseñar</span></NavLink>}
+        {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={activo}><Icono nombre="bandeja" tam={22} /><span>Pedidos</span></NavLink>}
+        {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={activo}><Icono nombre="martillo" tam={22} /><span>Panel</span></NavLink>}
+        {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={activo}><Icono nombre="grafico" tam={22} /><span>Métricas</span></NavLink>}
+        {!sesion && <NavLink to="/ingresar" className={activo}><Icono nombre="persona" tam={22} /><span>Ingresar</span></NavLink>}
+      </nav>
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/disenar" element={<Disenar />} />
