@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, NavLink, Navigate, useParams } from 'react-router-dom';
+import { Link, NavLink, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { useSesion } from '../App.jsx';
-import { Chip, Selector } from '../componentes/Comunes.jsx';
+import { Chip, Interruptor, Selector } from '../componentes/Comunes.jsx';
 import { Icono } from '../componentes/Iconos.jsx';
 import { MATERIALES } from '../lib/diseno.js';
 import { ESTADOS } from '../lib/estados.js';
-import { guardarTema, olvidarTema, temaGuardado } from '../lib/tema.js';
+import { guardarTema, olvidarTema, temaGuardado, usarAmbiente, usarMovil } from '../lib/tema.js';
 import { medidas, pesos } from '../lib/unidades.js';
 
 /** Secciones de la cuenta segun el rol: icono y nombre, como un menu de ajustes. */
@@ -105,6 +105,7 @@ function Fila({ icono, titulo, detalle, a, extra }) {
 
 function Preferencias() {
   const [tema, setTema] = useState(temaGuardado() || 'sistema');
+  const [ambiente, setAmbiente] = usarAmbiente();
   const cambiar = (t) => {
     setTema(t);
     if (t === 'sistema') olvidarTema();
@@ -116,6 +117,16 @@ function Preferencias() {
       <p className="tenue chico" style={{ marginBottom: 12 }}>Elegí cómo se ve Viruta en este dispositivo.</p>
       <Selector etiqueta="Tema" valor={tema} alCambiar={cambiar}
         opciones={[['sistema', 'Automático'], ['claro', 'Claro'], ['oscuro', 'Oscuro']]} />
+      <dl className="ajustes">
+        <div className="dato-fila">
+          <dt><strong>Luces de fondo</strong><span className="tenue chico">Los colores que se ven detrás del vidrio.</span></dt>
+          <dd><Interruptor etiqueta="Luces de fondo" activo={ambiente.luces} alCambiar={(v) => setAmbiente({ luces: v })} /></dd>
+        </div>
+        <div className={'dato-fila' + (ambiente.luces ? '' : ' apagada')}>
+          <dt><strong>Movimiento de las luces</strong><span className="tenue chico">Apagalo si preferís un fondo quieto.</span></dt>
+          <dd><Interruptor etiqueta="Movimiento de las luces" activo={ambiente.luces && ambiente.movimiento} alCambiar={(v) => setAmbiente({ movimiento: v })} /></dd>
+        </div>
+      </dl>
     </section>
   );
 }
@@ -332,18 +343,70 @@ function CuentaTaller({ seccion, sesion, salir }) {
 }
 
 /** Pagina de la cuenta: menu lateral con iconos y nombres, y el contenido de cada seccion. */
+/** Inicio de la cuenta en el celular: avatar al centro y la lista de opciones. */
+function Hub({ sesion, secciones, salir }) {
+  const taller = sesion.rol === 'CARPINTERIA';
+  const principales = secciones.filter(([id]) => id !== 'preferencias' && id !== 'seguridad');
+  const ajustes = secciones.filter(([id]) => id === 'preferencias' || id === 'seguridad');
+  const fila = ([id, icono, nombre]) => (
+    <Link key={id} to={'/cuenta/' + id} className="hub-fila">
+      <Icono nombre={icono} tam={20} /><span>{nombre}</span>
+      <span className="hub-ir"><Icono nombre="flecha" tam={15} /></span>
+    </Link>
+  );
+  return (
+    <main className="hub">
+      <div className="hub-perfil">
+        <span className="avatar grande">{iniciales(sesion.nombre)}</span>
+        <h1>{sesion.nombre}</h1>
+        <p className="tenue">{sesion.email || (taller ? 'Carpintería' : 'Cliente')}</p>
+      </div>
+      <Link to={taller ? '/panel' : '/disenar'} className="hub-destacado">
+        <Icono nombre={taller ? 'bandeja' : 'cubo'} tam={20} />
+        <span>{taller ? 'Abrir la bandeja de pedidos' : 'Diseñar un mueble nuevo'}</span>
+        <svg className="hub-arte" viewBox="0 0 120 90" aria-hidden="true">
+          <rect x="30" y="14" width="8" height="70" rx="2" fill="#D4A373" />
+          <rect x="90" y="14" width="8" height="70" rx="2" fill="#D4A373" />
+          <rect x="30" y="14" width="68" height="7" rx="2" fill="#C9945F" />
+          <rect x="34" y="40" width="60" height="6" rx="2" fill="#E2C8A2" />
+          <rect x="34" y="62" width="60" height="6" rx="2" fill="#E2C8A2" />
+          <rect x="30" y="78" width="68" height="7" rx="2" fill="#C9945F" />
+          <rect x="44" y="26" width="7" height="14" rx="1.5" fill="var(--acento)" />
+          <rect x="53" y="29" width="6" height="11" rx="1.5" fill="#6E4E37" />
+          <circle cx="80" cy="56" r="5" fill="var(--acento)" opacity=".7" />
+        </svg>
+      </Link>
+      <div className="hub-grupo">{principales.map(fila)}</div>
+      <div className="hub-grupo">{ajustes.map(fila)}</div>
+      <button className="hub-salir" onClick={salir}><Icono nombre="salir" tam={18} />Cerrar sesión</button>
+    </main>
+  );
+}
+
 export default function Cuenta() {
   const { sesion, salir } = useSesion();
   const { seccion } = useParams();
+  const movil = usarMovil();
+  const navegar = useNavigate();
   if (!sesion) return <Navigate to="/ingresar?volver=/cuenta" replace />;
   const secciones = SECCIONES[sesion.rol] || SECCIONES.CLIENTE;
   const actual = secciones.find(([id]) => id === seccion);
+  if (!seccion && movil) return <Hub sesion={sesion} secciones={secciones} salir={salir} />;
   if (!actual) return <Navigate to={'/cuenta/' + secciones[0][0]} replace />;
   const taller = sesion.rol === 'CARPINTERIA';
 
   return (
     <main className="cuenta">
-      <aside className="cuenta-menu vidrio">
+      {movil && (
+        <div className="cuenta-volver">
+          <button className="volver-circulo" aria-label="Volver a la cuenta" onClick={() => navegar('/cuenta')}>
+            <Icono nombre="volver" tam={18} />
+          </button>
+          <h2>{actual[2]}</h2>
+          <span />
+        </div>
+      )}
+      <aside className="cuenta-menu">
         <p className="cuenta-grupo">{taller ? 'Mi taller' : 'Mi cuenta'}</p>
         <nav aria-label="Secciones de la cuenta">
           {secciones.map(([id, icono, nombre]) => (

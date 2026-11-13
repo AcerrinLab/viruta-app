@@ -45,6 +45,16 @@ export function Selector({ opciones, valor, alCambiar, etiqueta, ancho = false }
   );
 }
 
+/** Interruptor tipo iOS. */
+export function Interruptor({ activo, alCambiar, etiqueta }) {
+  return (
+    <button type="button" role="switch" aria-checked={activo} aria-label={etiqueta}
+      className={'interruptor' + (activo ? ' activo' : '')} onClick={() => alCambiar(!activo)}>
+      <span />
+    </button>
+  );
+}
+
 export function Chip({ estado }) {
   const e = ESTADOS[estado] || { etiqueta: estado, tono: 'neutro' };
   return <span className={'chip ' + e.tono}>{e.etiqueta}</span>;

@@ -10,9 +10,9 @@ import Panel from './paginas/Panel.jsx';
 import PagoSimulado from './paginas/PagoSimulado.jsx';
 import Metricas from './paginas/Metricas.jsx';
 import Cuenta from './paginas/Cuenta.jsx';
-import { aplicarTema } from './componentes/Comunes.jsx';
+import { Interruptor, aplicarTema } from './componentes/Comunes.jsx';
 import { Icono } from './componentes/Iconos.jsx';
-import { guardarTema, seguirSistema, temaActual } from './lib/tema.js';
+import { guardarTema, seguirSistema, temaActual, usarAmbiente, usarTema } from './lib/tema.js';
 
 const Sesion = createContext(null);
 export const useSesion = () => useContext(Sesion);
@@ -44,6 +44,10 @@ function Usuario({ sesion, alSalir }) {
     return () => { document.removeEventListener('pointerdown', cerrar); document.removeEventListener('keydown', tecla); };
   }, [abierto]);
   const nombre = sesion.nombre || 'Mi cuenta';
+  const taller = sesion.rol === 'CARPINTERIA';
+  const tema = usarTema();
+  const [ambiente, setAmbiente] = usarAmbiente();
+  const cerrar = () => setAbierto(false);
   return (
     <div className="usuario" ref={caja}>
       <button className="usuario-boton" aria-haspopup="menu" aria-expanded={abierto} onClick={() => setAbierto(!abierto)}>
@@ -52,16 +56,38 @@ function Usuario({ sesion, alSalir }) {
       </button>
       {abierto && (
         <div className="usuario-menu" role="menu">
-          <div className="cabecera">
-            <span className="avatar" aria-hidden="true">{iniciales(sesion.nombre)}</span>
-            <div><strong>{nombre}</strong><span>{ROLES[sesion.rol] || sesion.rol}</span></div>
+          <div className="menu-cabeza">
+            <strong>{nombre}</strong>
+            <span>{ROLES[sesion.rol] || sesion.rol}</span>
           </div>
-          <Link className="item" role="menuitem" to="/cuenta" onClick={() => setAbierto(false)}>
-            <Icono nombre="persona" />{sesion.rol === 'CARPINTERIA' ? 'Mi taller' : 'Mi cuenta'}
-          </Link>
-          <button className="item" role="menuitem" onClick={() => { setAbierto(false); alSalir(); }}>
-            <Icono nombre="salir" />Salir
-          </button>
+          <div className="menu-grupo">
+            {(taller
+              ? [['resumen', 'grafico', 'Resumen'], ['perfil', 'martillo', 'Mi taller'], ['pedidos', 'bandeja', 'Pedidos']]
+              : [['perfil', 'persona', 'Mi perfil'], ['proyectos', 'cubo', 'Mis proyectos'], ['pedidos', 'bandeja', 'Mis pedidos']]
+            ).map(([id, icono, texto]) => (
+              <Link key={id} className="item" role="menuitem" to={'/cuenta/' + id} onClick={cerrar}>
+                <Icono nombre={icono} tam={16} />{texto}
+              </Link>
+            ))}
+          </div>
+          <div className="menu-grupo">
+            <Link className="item" role="menuitem" to="/cuenta/preferencias" onClick={cerrar}>
+              <Icono nombre="ajustes" tam={16} />Preferencias<span className="item-fin"><Icono nombre="adelante" tam={14} /></span>
+            </Link>
+            <div className="item" role="menuitemcheckbox" aria-checked={tema === 'oscuro'}>
+              <Icono nombre="luna" tam={16} />Tema oscuro
+              <span className="item-fin"><Interruptor etiqueta="Tema oscuro" activo={tema === 'oscuro'} alCambiar={(v) => guardarTema(v ? 'oscuro' : 'claro')} /></span>
+            </div>
+            <div className="item" role="menuitemcheckbox" aria-checked={ambiente.luces}>
+              <Icono nombre="sol" tam={16} />Luces de fondo
+              <span className="item-fin"><Interruptor etiqueta="Luces de fondo" activo={ambiente.luces} alCambiar={(v) => setAmbiente({ luces: v })} /></span>
+            </div>
+          </div>
+          <div className="menu-grupo">
+            <button className="item" role="menuitem" onClick={() => { cerrar(); alSalir(); }}>
+              <Icono nombre="salir" tam={16} />Salir
+            </button>
+          </div>
         </div>
       )}
     </div>
