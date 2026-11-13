@@ -3,18 +3,20 @@ import * as THREE from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { cajas, tono } from '../lib/modelo.js';
 import { COLORES } from '../lib/diseno.js';
+import { cajaMadera, texturaMadera } from '../lib/madera.js';
 
 /** Arma el modelo GLB del mueble a escala real (metros) a partir de las mismas piezas del visor. */
 function exportarGlb(piezas, hex) {
   const grupo = new THREE.Group();
-  for (const c of cajas(piezas)) {
+  const textura = texturaMadera(hex);
+  cajas(piezas).forEach((c, i) => {
     const malla = new THREE.Mesh(
-      new THREE.BoxGeometry(...c.tam),
-      new THREE.MeshStandardMaterial({ color: tono(hex, c.rol), roughness: 0.75, metalness: 0 })
+      cajaMadera(c.tam, i),
+      new THREE.MeshStandardMaterial({ map: textura, color: tono('#ffffff', c.rol), roughness: 0.62, metalness: 0 })
     );
     malla.position.set(...c.centro);
     grupo.add(malla);
-  }
+  });
   return new Promise((resolver, rechazar) => {
     new GLTFExporter().parse(
       grupo,

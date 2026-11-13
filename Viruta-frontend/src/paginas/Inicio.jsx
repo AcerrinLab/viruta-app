@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api.js';
+import { useSesion } from '../App.jsx';
+import { Selector, aplicarTema } from '../componentes/Comunes.jsx';
 
 /** Portada con la lista de espera y su contador real (RF-20). */
 export default function Inicio() {
@@ -9,6 +11,13 @@ export default function Inicio() {
   const [tipo, setTipo] = useState('CLIENTE');
   const [acepta, setAcepta] = useState(false);
   const [mensaje, setMensaje] = useState(null);
+  const { sesion } = useSesion();
+
+  // El color de la pagina acompana al perfil elegido en la lista de espera.
+  useEffect(() => {
+    aplicarTema(sesion ? sesion.rol : tipo);
+    return () => aplicarTema(sesion?.rol);
+  }, [tipo, sesion]);
 
   useEffect(() => {
     api('/api/lista-espera/contador').then(setContador).catch(() => {});
@@ -28,8 +37,9 @@ export default function Inicio() {
   return (
     <main>
       <section className="portada">
+        <span className="antetitulo">Muebles a medida en Jujuy</span>
         <h1>Tu mueble a medida, sin errores de medida.</h1>
-        <p className="tenue" style={{ fontSize: '1.15rem' }}>
+        <p className="bajada">
           Diseñalo, miralo en tu casa con la cámara y encargalo a una carpintería de Jujuy.
         </p>
         <div className="fila">
@@ -38,16 +48,14 @@ export default function Inicio() {
         </div>
       </section>
 
-      <section className="tarjeta pila" style={{ marginTop: 32, maxWidth: 520 }}>
+      <section className="tarjeta pila" style={{ marginTop: 36, maxWidth: 520, padding: 24, borderRadius: 24 }}>
         <div>
           <h2>Lista de espera</h2>
           {contador && <p className="tenue"><span className="punto" />{contador.total} personas anotadas</p>}
         </div>
         <form className="pila" onSubmit={anotar}>
-          <div className="opciones">
-            <button type="button" className={'opcion ' + (tipo === 'CLIENTE' ? 'elegida' : '')} onClick={() => setTipo('CLIENTE')}>Quiero un mueble</button>
-            <button type="button" className={'opcion ' + (tipo === 'CARPINTERIA' ? 'elegida' : '')} onClick={() => setTipo('CARPINTERIA')}>Tengo una carpintería</button>
-          </div>
+          <Selector etiqueta="Perfil" ancho valor={tipo} alCambiar={setTipo}
+            opciones={[['CLIENTE', 'Quiero un mueble'], ['CARPINTERIA', 'Tengo una carpintería']]} />
           <label>
             Email
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />

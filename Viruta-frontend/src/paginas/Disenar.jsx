@@ -4,7 +4,7 @@ import { api, guardarBorrador, leerBorrador } from '../api.js';
 import { useSesion } from '../App.jsx';
 import Visor3D from '../componentes/Visor3D.jsx';
 import VistaAR from '../componentes/VistaAR.jsx';
-import { CampoCm, GuiaMedir, Materiales, Medida, Pasos } from '../componentes/Comunes.jsx';
+import { CampoCm, GuiaMedir, Materiales, Medida, Pasos, Selector } from '../componentes/Comunes.jsx';
 import { COLORES, MATERIALES, PLANTILLAS, aSolicitud, disenoInicial, tieneEspacio } from '../lib/diseno.js';
 
 const DIBUJOS = {
@@ -89,7 +89,7 @@ export default function Disenar() {
         <div className="tres">
           {Object.entries(PLANTILLAS).map(([id, p]) => (
             <button key={id} className="tarjeta elegible pila" onClick={() => { setDiseno(disenoInicial(id)); setProyectoId(null); setPaso(2); }}>
-              <svg viewBox="0 0 48 48" width="72" height="72" fill="none" stroke="#143523" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg viewBox="0 0 48 48" width="72" height="72" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d={DIBUJOS[id]} />
               </svg>
               <h3>{p.etiqueta}</h3>
@@ -115,7 +115,7 @@ export default function Disenar() {
 
       {paso === 2 && (
         <div className="dos">
-          <div className="pila">
+          <div className="pila pegado">
             <div className="tarjeta sin-relleno">
               <Visor3D piezas={calculo?.piezas} color={diseno.color} />
             </div>
@@ -156,11 +156,7 @@ export default function Disenar() {
             </div>
 
             <div className="tarjeta pila">
-              <div className="opciones">
-                {Object.entries(MATERIALES).map(([id, nombre]) => (
-                  <button key={id} className={'opcion ' + (diseno.material === id ? 'elegida' : '')} onClick={() => cambiar({ material: id })}>{nombre}</button>
-                ))}
-              </div>
+              <Selector etiqueta="Material" ancho opciones={Object.entries(MATERIALES)} valor={diseno.material} alCambiar={(id) => cambiar({ material: id })} />
               <div className="opciones">
                 {Object.entries(COLORES).map(([id, c]) => (
                   <button key={id} className={'color ' + (diseno.color === id ? 'elegida' : '')} style={{ background: c.hex }}

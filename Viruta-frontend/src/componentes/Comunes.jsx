@@ -1,6 +1,49 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ESTADOS, RECORRIDO, avance } from '../lib/estados.js';
 import { cmAMm, limitar, mmACm } from '../lib/unidades.js';
+
+/**
+ * Tema por rol: verde para clientes, nogal para talleres. Lo aplica sobre <body> para que
+ * el fondo, los botones y el vidrio cambien juntos.
+ */
+export function aplicarTema(rol) {
+  document.body.dataset.rol = rol === 'CARPINTERIA' ? 'taller' : 'cliente';
+}
+
+/** Selector segmentado de vidrio, estilo iOS: una "gota" se desliza hasta la opcion elegida. */
+export function Selector({ opciones, valor, alCambiar, etiqueta, ancho = false }) {
+  const caja = useRef(null);
+  const [gota, setGota] = useState(null);
+  const [moviendo, setMoviendo] = useState(false);
+
+  useLayoutEffect(() => {
+    const medir = () => {
+      const elegido = caja.current?.querySelector('[aria-checked="true"]');
+      if (elegido) setGota({ x: elegido.offsetLeft, w: elegido.offsetWidth });
+    };
+    medir();
+    const observador = new ResizeObserver(medir);
+    observador.observe(caja.current);
+    return () => observador.disconnect();
+  }, [valor, opciones.length]);
+
+  useEffect(() => {
+    setMoviendo(true);
+    const t = setTimeout(() => setMoviendo(false), 260);
+    return () => clearTimeout(t);
+  }, [valor]);
+
+  return (
+    <div ref={caja} role="radiogroup" aria-label={etiqueta} className={'selector vidrio' + (ancho ? ' ancho' : '') + (moviendo ? ' moviendo' : '')}>
+      {gota && <span className="gota" style={{ width: gota.w, transform: `translateX(${gota.x}px)` }} aria-hidden="true" />}
+      {opciones.map(([id, texto]) => (
+        <button key={id} type="button" role="radio" aria-checked={valor === id} onClick={() => alCambiar(id)}>
+          {texto}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export function Chip({ estado }) {
   const e = ESTADOS[estado] || { etiqueta: estado, tono: 'neutro' };
@@ -94,17 +137,17 @@ export function GuiaMedir({ alCerrar }) {
       <div className="dialogo">
         <h2>Cómo medir</h2>
         <svg viewBox="0 0 320 210" role="img" aria-label="Esquema del espacio con ancho, alto y profundidad adelante y atrás">
-          <polygon points="60,40 260,40 290,70 290,190 30,190 30,70" fill="#f3efe8" stroke="#d8d2c6" />
+          <polygon points="60,40 260,40 290,70 290,190 30,190 30,70" fill="#F5F2EB" stroke="#D8D2C6" />
           <polygon points="60,40 260,40 260,150 60,150" fill="#fff" stroke="#d8d2c6" />
           <line x1="60" y1="150" x2="30" y2="190" stroke="#d8d2c6" />
           <line x1="260" y1="150" x2="290" y2="190" stroke="#d8d2c6" />
-          <g stroke="#143523" strokeWidth="2.5" strokeLinecap="round">
+          <g stroke="var(--acento)" strokeWidth="2.5" strokeLinecap="round">
             <line x1="70" y1="140" x2="250" y2="140" />
             <line x1="76" y1="50" x2="76" y2="132" />
             <line x1="44" y1="186" x2="66" y2="156" />
             <line x1="276" y1="186" x2="254" y2="156" />
           </g>
-          <g fontSize="12" fill="#143523" fontWeight="600">
+          <g fontSize="12" fill="var(--acento)" fontWeight="600">
             <text x="160" y="133" textAnchor="middle">1 Ancho</text>
             <text x="84" y="95">2 Alto</text>
             <text x="70" y="180">3 Fondo izq.</text>

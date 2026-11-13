@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { guardarSesion, leerSesion } from './api.js';
 import Inicio from './paginas/Inicio.jsx';
@@ -9,6 +9,7 @@ import MisPedidos from './paginas/MisPedidos.jsx';
 import Panel from './paginas/Panel.jsx';
 import PagoSimulado from './paginas/PagoSimulado.jsx';
 import Metricas from './paginas/Metricas.jsx';
+import { aplicarTema } from './componentes/Comunes.jsx';
 
 const Sesion = createContext(null);
 export const useSesion = () => useContext(Sesion);
@@ -35,12 +36,23 @@ export default function App() {
   };
   const activo = ({ isActive }) => (isActive ? 'activo' : '');
 
+  // Verde para clientes, nogal para talleres.
+  useEffect(() => aplicarTema(sesion?.rol), [sesion]);
+
   return (
     <Sesion.Provider value={{ sesion, entrar, salir }}>
+      <div className="ambiente" aria-hidden="true">
+        <span className="mancha m1" />
+        <span className="mancha m2" />
+        <span className="mancha m3" />
+      </div>
       <header className="barra">
-        <Link to="/" className="marca">
-          <img src="/icono.svg" alt="" />
-          Viruta
+        <Link to="/" className="marca" aria-label="Viruta, inicio">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect className="fondo-marca" width="32" height="32" rx="9" />
+            <path d="M9 9l7 15 7-15" fill="none" stroke="#E2C8A2" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span>Viruta</span>
         </Link>
         <nav>
           {(!sesion || sesion.rol === 'CLIENTE') && <NavLink to="/disenar" className={activo}>Diseñar</NavLink>}

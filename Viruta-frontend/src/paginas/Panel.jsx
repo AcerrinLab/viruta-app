@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api, escucharEventos } from '../api.js';
 import Visor3D from '../componentes/Visor3D.jsx';
-import { Chip, Materiales } from '../componentes/Comunes.jsx';
+import { Chip, Materiales, Selector } from '../componentes/Comunes.jsx';
 import { ACCION_CARPINTERIA, siguienteDeCarpinteria } from '../lib/estados.js';
 import { COLORES, MATERIALES } from '../lib/diseno.js';
 import { medidas, mmACm, pesos } from '../lib/unidades.js';
@@ -206,14 +206,15 @@ export default function Panel() {
       </div>
 
       <div className="pestanas">
-        {PESTANAS.map(([nombre, estados], i) => {
-          const cantidad = pedidos.filter((p) => estados.includes(p.estado)).length;
-          return (
-            <button key={nombre} className={'opcion ' + (pestana === i ? 'elegida' : '')} onClick={() => setPestana(i)}>
-              {nombre}{cantidad > 0 ? ` (${cantidad})` : ''}
-            </button>
-          );
-        })}
+        <Selector
+          etiqueta="Pedidos"
+          opciones={PESTANAS.map(([nombre, estados], i) => {
+            const cantidad = pedidos.filter((p) => estados.includes(p.estado)).length;
+            return [i, nombre + (cantidad > 0 ? ` (${cantidad})` : '')];
+          })}
+          valor={pestana}
+          alCambiar={setPestana}
+        />
       </div>
 
       {visibles.length === 0 && <p className="tenue">No hay pedidos acá.</p>}
