@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { MATERIALES } from '../lib/diseno.js';
 import { medidas } from '../lib/unidades.js';
+import { Icono } from '../componentes/Iconos.jsx';
 
 const CLAVE_MAPS = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
@@ -120,7 +121,7 @@ export default function Carpinterias() {
               <span className="chico">Acepto compartir mi nombre, teléfono y diseño con esta carpintería.</span>
             </label>
             {error && <p className="nota error">{error}</p>}
-            <button className="boton" disabled={!acepta || enviando}>Enviar pedido</button>
+            <button className="boton" disabled={!acepta || enviando}><Icono nombre="enviar" />Enviar pedido</button>
             <button type="button" className="boton plano" onClick={() => { setElegida(null); setError(''); }}>Cancelar</button>
           </form>
         </div>

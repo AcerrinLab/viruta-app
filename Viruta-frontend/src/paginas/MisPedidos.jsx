@@ -4,6 +4,7 @@ import { api } from '../api.js';
 import { Chip, PasosPedido } from '../componentes/Comunes.jsx';
 import { MATERIALES } from '../lib/diseno.js';
 import { medidas, pesos } from '../lib/unidades.js';
+import { Icono } from '../componentes/Iconos.jsx';
 
 /** Pantalla del cliente: sus pedidos con el estado actualizado y sus proyectos guardados (RF-05, RF-18, RF-19). */
 export default function MisPedidos() {
@@ -40,7 +41,7 @@ export default function MisPedidos() {
     <main className="pila">
       <div className="fila entre">
         <h2>Mis pedidos</h2>
-        <Link to="/disenar" className="boton claro">Nuevo mueble</Link>
+        <Link to="/disenar" className="boton claro"><Icono nombre="cubo" />Nuevo mueble</Link>
       </div>
       {error && <p className="nota error">{error}</p>}
       {pedidos && pedidos.length === 0 && <p className="tenue">Todavía no pediste ningún presupuesto.</p>}
@@ -68,7 +69,7 @@ export default function MisPedidos() {
           )}
           {p.estado === 'PRESUPUESTADO' && (
             <div className="fila">
-              <button className="boton" onClick={() => pagar(p.id)}>Aceptar y pagar seña</button>
+              <button className="boton" onClick={() => pagar(p.id)}><Icono nombre="carrito" />Aceptar y pagar seña</button>
               <button className="boton plano" onClick={() => rechazar(p.id)}>Rechazar</button>
             </div>
           )}

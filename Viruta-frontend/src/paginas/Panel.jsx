@@ -2,10 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api, escucharEventos } from '../api.js';
 import Visor3D from '../componentes/Visor3D.jsx';
-import { Chip, Materiales } from '../componentes/Comunes.jsx';
+import { Chip, Materiales, Selector } from '../componentes/Comunes.jsx';
 import { ACCION_CARPINTERIA, siguienteDeCarpinteria } from '../lib/estados.js';
 import { COLORES, MATERIALES } from '../lib/diseno.js';
 import { medidas, mmACm, pesos } from '../lib/unidades.js';
+import { Icono } from '../componentes/Iconos.jsx';
+import { usarMovil } from '../lib/tema.js';
 
 const PESTANAS = [
   ['Nuevos', ['PENDIENTE']],
@@ -132,7 +134,7 @@ function Detalle({ id, alCambiar, alCerrar }) {
           </label>
           <div className="fila entre">
             <div className="dato"><span className="tenue">Total a cobrar</span><span className="numero">{pesos(total)}</span></div>
-            <button className="boton">Enviar presupuesto</button>
+            <button className="boton"><Icono nombre="enviar" />Enviar presupuesto</button>
           </div>
         </form>
       )}
@@ -148,7 +150,7 @@ function Detalle({ id, alCambiar, alCerrar }) {
       {siguiente && <button className="boton" onClick={() => accion('estado', { estado: siguiente })}>{ACCION_CARPINTERIA[siguiente]}</button>}
 
       <Materiales lista={p.calculo.materiales} />
-      <button className="boton plano" onClick={alCerrar}>Volver a la bandeja</button>
+      <button className="boton plano" onClick={alCerrar}><Icono nombre="volver" />Volver a la bandeja</button>
     </div>
   );
 }
@@ -158,10 +160,11 @@ export default function Panel() {
   const [parametros, setParametros] = useSearchParams();
   const abierto = parametros.get('pedido');
   const [perfil, setPerfil] = useState(null);
-  const [editandoPerfil, setEditandoPerfil] = useState(false);
+  const [editandoPerfil, setEditandoPerfil] = useState(parametros.has('editar'));
   const [pedidos, setPedidos] = useState([]);
   const [resumen, setResumen] = useState(null);
   const [pestana, setPestana] = useState(0);
+  const movil = usarMovil();
   const [error, setError] = useState('');
 
   const cargar = useCallback(() => {
@@ -205,16 +208,31 @@ export default function Panel() {
         <div className="tarjeta dato"><span className="tenue">Comisión Viruta</span><span className="numero">{pesos(resumen?.comision)}</span></div>
       </div>
 
+      {movil ? (
+        <label className="filtro">
+          <Icono nombre="filtro" tam={18} />
+          <span className="filtro-etiqueta">Mostrar</span>
+          <select value={pestana} onChange={(e) => setPestana(Number(e.target.value))} aria-label="Filtrar pedidos">
+            {PESTANAS.map(([nombre, estados], i) => {
+              const cantidad = pedidos.filter((p) => estados.includes(p.estado)).length;
+              return <option key={nombre} value={i}>{nombre}{cantidad > 0 ? ` (${cantidad})` : ''}</option>;
+            })}
+          </select>
+          <Icono nombre="abajo" tam={16} />
+        </label>
+      ) : (
       <div className="pestanas">
-        {PESTANAS.map(([nombre, estados], i) => {
-          const cantidad = pedidos.filter((p) => estados.includes(p.estado)).length;
-          return (
-            <button key={nombre} className={'opcion ' + (pestana === i ? 'elegida' : '')} onClick={() => setPestana(i)}>
-              {nombre}{cantidad > 0 ? ` (${cantidad})` : ''}
-            </button>
-          );
-        })}
+        <Selector
+          etiqueta="Pedidos"
+          opciones={PESTANAS.map(([nombre, estados], i) => {
+            const cantidad = pedidos.filter((p) => estados.includes(p.estado)).length;
+            return [i, nombre + (cantidad > 0 ? ` (${cantidad})` : '')];
+          })}
+          valor={pestana}
+          alCambiar={setPestana}
+        />
       </div>
+      )}
 
       {visibles.length === 0 && <p className="tenue">No hay pedidos acá.</p>}
       {visibles.map((p) => (

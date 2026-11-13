@@ -4,8 +4,9 @@ import { api, guardarBorrador, leerBorrador } from '../api.js';
 import { useSesion } from '../App.jsx';
 import Visor3D from '../componentes/Visor3D.jsx';
 import VistaAR from '../componentes/VistaAR.jsx';
-import { CampoCm, GuiaMedir, Materiales, Medida, Pasos } from '../componentes/Comunes.jsx';
+import { CampoCm, GuiaMedir, Materiales, Medida, Pasos, Selector } from '../componentes/Comunes.jsx';
 import { COLORES, MATERIALES, PLANTILLAS, aSolicitud, disenoInicial, tieneEspacio } from '../lib/diseno.js';
+import { Icono } from '../componentes/Iconos.jsx';
 
 const DIBUJOS = {
   ESTANTE: 'M14 6v36M34 6v36M14 8h20M14 24h20M14 40h20',
@@ -89,7 +90,7 @@ export default function Disenar() {
         <div className="tres">
           {Object.entries(PLANTILLAS).map(([id, p]) => (
             <button key={id} className="tarjeta elegible pila" onClick={() => { setDiseno(disenoInicial(id)); setProyectoId(null); setPaso(2); }}>
-              <svg viewBox="0 0 48 48" width="72" height="72" fill="none" stroke="#143523" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg viewBox="0 0 48 48" width="72" height="72" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d={DIBUJOS[id]} />
               </svg>
               <h3>{p.etiqueta}</h3>
@@ -109,26 +110,26 @@ export default function Disenar() {
       <Pasos hechos={paso} total={3} />
       <div className="fila entre">
         <h2>{paso === 2 ? 'Medí y ajustá' : 'Qué comprar'}</h2>
-        <button className="boton plano" onClick={() => (paso === 3 ? setPaso(2) : setPaso(1))}>Volver</button>
+        <button className="boton plano" onClick={() => (paso === 3 ? setPaso(2) : setPaso(1))}><Icono nombre="volver" />Volver</button>
       </div>
       {error && <p className="nota error">{error}</p>}
 
       {paso === 2 && (
         <div className="dos">
-          <div className="pila">
+          <div className="pila pegado">
             <div className="tarjeta sin-relleno">
               <Visor3D piezas={calculo?.piezas} color={diseno.color} />
             </div>
             {avisos.map((a, i) => <p key={i} className="nota aviso">{a.mensaje}</p>)}
             {tieneEspacio(diseno) && !noEntra && calculo && <p className="nota">Entra en tu espacio.</p>}
-            <button className="boton claro" disabled={!calculo} onClick={() => setAr(true)}>Verlo en mi espacio</button>
+            <button className="boton claro" disabled={!calculo} onClick={() => setAr(true)}><Icono nombre="visor" />Verlo en mi espacio</button>
           </div>
 
           <div className="pila">
             <div className="tarjeta pila">
               <div className="fila entre">
                 <h3>Tu espacio</h3>
-                <button className="boton plano" style={{ minHeight: 36, padding: '0 8px' }} onClick={() => setGuia(true)}>Cómo medir</button>
+                <button className="boton plano" onClick={() => setGuia(true)}><Icono nombre="regla" />Cómo medir</button>
               </div>
               <div className="tres" style={{ gridTemplateColumns: '1fr 1fr' }}>
                 <CampoCm etiqueta="Ancho" valor={diseno.espacioAncho} alCambiar={(v) => cambiar({ espacioAncho: v })} />
@@ -156,11 +157,7 @@ export default function Disenar() {
             </div>
 
             <div className="tarjeta pila">
-              <div className="opciones">
-                {Object.entries(MATERIALES).map(([id, nombre]) => (
-                  <button key={id} className={'opcion ' + (diseno.material === id ? 'elegida' : '')} onClick={() => cambiar({ material: id })}>{nombre}</button>
-                ))}
-              </div>
+              <Selector etiqueta="Material" ancho opciones={Object.entries(MATERIALES)} valor={diseno.material} alCambiar={(id) => cambiar({ material: id })} />
               <div className="opciones">
                 {Object.entries(COLORES).map(([id, c]) => (
                   <button key={id} className={'color ' + (diseno.color === id ? 'elegida' : '')} style={{ background: c.hex }}
@@ -169,7 +166,7 @@ export default function Disenar() {
               </div>
             </div>
 
-            <button className="boton" disabled={!calculo || !!error} onClick={() => setPaso(3)}>Ver qué comprar</button>
+            <button className="boton" disabled={!calculo || !!error} onClick={() => setPaso(3)}><Icono nombre="lista" />Ver qué comprar</button>
           </div>
         </div>
       )}
@@ -179,8 +176,8 @@ export default function Disenar() {
           <Materiales lista={calculo?.materiales} />
           {guardado && <p className="nota">Guardado en tus proyectos.</p>}
           <div className="fila">
-            <button className="boton" disabled={!calculo} onClick={pedir}>Pedir presupuesto</button>
-            <button className="boton claro" disabled={!calculo} onClick={guardar}>Guardar</button>
+            <button className="boton" disabled={!calculo} onClick={pedir}><Icono nombre="enviar" />Pedir presupuesto</button>
+            <button className="boton claro" disabled={!calculo} onClick={guardar}><Icono nombre="guardar" />Guardar</button>
           </div>
         </div>
       )}
