@@ -1058,3 +1058,14 @@ input.codigo { font-size: 1.4rem; letter-spacing: .4em; text-align: center; font
   .admin-movil { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
   .admin-movil .opcion { flex: none; text-decoration: none; display: inline-flex; align-items: center; }
 }
+
+/* El aro del avatar grande abraza solo al avatar (no al ancho de la cabecera) */
+.avatar-grande { justify-self: start; width: max-content; height: max-content; }
+.hub-perfil .avatar-grande { justify-self: center; }
+@media (max-width: 767px) { .perfil-cabecera .avatar-grande { justify-self: center; } }
+
+/* Aviso de Google sin configurar (solo en desarrollo) */
+.google-falta {
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 44px;
+  border-radius: 999px; border: 1px dashed var(--borde-medio); color: var(--tenue); font-weight: 600; font-size: .9rem;
+}
