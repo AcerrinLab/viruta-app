@@ -4,6 +4,8 @@ import java.time.Instant;
 
 import com.acerrinlab.viruta.usuarios.Rol;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -36,6 +38,9 @@ class Usuario {
     String fotoUrl;
     /** Telefono normalizado (10 digitos) y si ya se verifico con un codigo. */
     String telefono;
+    /** Con valor por defecto para que la columna se pueda agregar a bases que ya tienen usuarios. */
+    @ColumnDefault("false")
+    @Column(nullable = false)
     boolean telefonoVerificado;
     /** Identificador de la cuenta de Google vinculada. */
     @Column(unique = true)
