@@ -976,3 +976,19 @@ html[data-tema="oscuro"] .luz { opacity: .2; }
 }
 @media (max-width: 767px) { .cuenta-menu { display: none !important; } }
 @media (max-width: 767px) { .tres .numero { font-size: 1.45rem; white-space: nowrap; } }
+
+/* ---------- Catalogo por colecciones ---------- */
+.coleccion { display: grid; gap: 12px; }
+.coleccion + .coleccion { margin-top: 12px; }
+.coleccion-cabeza { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.coleccion-cabeza h3 { font-size: 1.05rem; }
+:root { --violeta: #7B5EA7; --violeta-suave: rgba(123, 94, 167, .12); }
+html[data-tema="oscuro"] { --violeta: #B79BE0; --violeta-suave: rgba(183, 155, 224, .16); }
+.insignia-nueva {
+  display: inline-flex; align-items: center; min-height: 22px; padding: 0 9px; border-radius: 999px;
+  font-size: .72rem; font-weight: 700; color: var(--violeta); background: var(--violeta-suave);
+}
+.tarjeta.pieza-antigua { border: 1.5px solid var(--violeta); box-shadow: 0 0 0 4px var(--violeta-suave), var(--vidrio-sombra); }
+.tarjeta.pieza-antigua svg { color: var(--violeta) !important; }
+.tarjeta.pieza-antigua:hover { border-color: var(--violeta); box-shadow: 0 0 0 5px var(--violeta-suave), 0 16px 34px -16px rgba(123,94,167,.4); }
+.pieza-sello { justify-self: start; font-size: .72rem; font-weight: 600; color: var(--violeta); }

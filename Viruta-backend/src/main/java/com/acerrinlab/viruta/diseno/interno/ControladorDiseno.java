@@ -40,6 +40,7 @@ class ControladorDiseno {
             m.put("alto", List.of(p.altoMin, p.altoMax));
             m.put("profundidad", List.of(p.profundidadMin, p.profundidadMax));
             m.put("estantes", List.of(p.estantesMin, p.estantesMax));
+            m.put("coleccion", p.coleccion);
             return m;
         }).toList();
     }

@@ -30,6 +30,7 @@ public final class GeneradorPiezas {
             case ESTANTE -> estante(ancho, alto, profundidad, estantes, espesor);
             case MESA -> mesa(ancho, alto, profundidad, espesor);
             case BAJO_MESADA -> bajoMesada(ancho, alto, profundidad, estantes, espesor);
+            case RELICARIO -> relicario(ancho, alto, profundidad, estantes, espesor);
         };
     }
 
@@ -84,6 +85,64 @@ public final class GeneradorPiezas {
             piezas.add(new PiezaDiseno("Puerta", RolPieza.PUERTA, altoPuerta, anchoPuerta, e,
                     x, 0, luz, anchoPuerta, e, altoPuerta));
         }
+        return piezas;
+    }
+
+    /**
+     * Relicario: cuerpo con zocalo, techo, base y fondo; estantes de vidrio repartidos parejo y
+     * puertas vidriadas al frente (marco de madera con un pano de vidrio). El frente queda libre
+     * para las puertas, como en el bajo mesada.
+     */
+    private static List<PiezaDiseno> relicario(int ancho, int alto, int prof, int estantes, int e) {
+        List<PiezaDiseno> piezas = new ArrayList<>();
+        int interior = ancho - 2 * e;
+        int cuerpo = prof - e;
+        int zocalo = 80;
+        piezas.add(vertical("Lateral", alto, cuerpo, e, 0, e, 0));
+        piezas.add(vertical("Lateral", alto, cuerpo, e, ancho - e, e, 0));
+        piezas.add(horizontal("Base", interior, cuerpo - e, e, e, e, zocalo));
+        piezas.add(horizontal("Techo", interior, cuerpo, e, e, e, alto - e));
+        piezas.add(new PiezaDiseno("Zócalo", RolPieza.REFUERZO, interior, zocalo, e,
+                e, e, 0, interior, e, zocalo));
+        piezas.add(new PiezaDiseno("Fondo", RolPieza.VERTICAL, alto - e - zocalo, interior, e,
+                e, prof - e, zocalo, interior, e, alto - e - zocalo));
+
+        int vidrio = 6;
+        int profVidrio = cuerpo - e - 10;
+        int piso = zocalo + e;
+        int techo = alto - e;
+        int hueco = (techo - piso - estantes * vidrio) / (estantes + 1);
+        for (int i = 0; i < estantes; i++) {
+            int z = piso + (i + 1) * hueco + i * vidrio;
+            piezas.add(new PiezaDiseno("Estante de vidrio", RolPieza.VIDRIO, interior, profVidrio, vidrio,
+                    e, e + 5, z, interior, profVidrio, vidrio));
+        }
+
+        int puertas = ancho <= 600 ? 1 : 2;
+        int luz = 3;
+        int marco = 50;
+        int anchoPuerta = (ancho - luz * (puertas + 1)) / puertas;
+        int altoPuerta = alto - zocalo - 2 * luz;
+        int zPuerta = zocalo + luz;
+        for (int i = 0; i < puertas; i++) {
+            int x = luz + i * (anchoPuerta + luz);
+            int luzInterior = anchoPuerta - 2 * marco;
+            // El montante del lado de las bisagras lleva el rol de puerta (suma las dos bisagras).
+            piezas.add(new PiezaDiseno("Montante", RolPieza.PUERTA, altoPuerta, marco, e,
+                    x, 0, zPuerta, marco, e, altoPuerta));
+            piezas.add(new PiezaDiseno("Montante", RolPieza.REFUERZO, altoPuerta, marco, e,
+                    x + anchoPuerta - marco, 0, zPuerta, marco, e, altoPuerta));
+            piezas.add(new PiezaDiseno("Travesaño de puerta", RolPieza.REFUERZO, luzInterior, marco, e,
+                    x + marco, 0, zPuerta, luzInterior, e, marco));
+            piezas.add(new PiezaDiseno("Travesaño de puerta", RolPieza.REFUERZO, luzInterior, marco, e,
+                    x + marco, 0, zPuerta + altoPuerta - marco, luzInterior, e, marco));
+            int altoVidrio = altoPuerta - 2 * marco;
+            piezas.add(new PiezaDiseno("Vidrio de puerta", RolPieza.VIDRIO, altoVidrio, luzInterior, 4,
+                    x + marco, (e - 4) / 2, zPuerta + marco, luzInterior, 4, altoVidrio));
+        }
+        // En el despiece el largo siempre es la medida mayor de la pieza.
+        piezas.replaceAll(p -> p.largo() >= p.ancho() ? p : new PiezaDiseno(p.nombre(), p.rol(), p.ancho(), p.largo(),
+                p.espesor(), p.x(), p.y(), p.z(), p.dx(), p.dy(), p.dz()));
         return piezas;
     }
 

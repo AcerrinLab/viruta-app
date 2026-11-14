@@ -9,7 +9,9 @@ public enum RolPieza {
     /** Travesano de refuerzo: dos tornillos por extremo. */
     REFUERZO(4, 0),
     /** Puerta: dos bisagras. */
-    PUERTA(0, 2);
+    PUERTA(0, 2),
+    /** Vidrio (estantes o panos de puerta): no sale de la placa y se apoya en soportes. */
+    VIDRIO(0, 0);
 
     private final int tornillos;
     private final int bisagras;

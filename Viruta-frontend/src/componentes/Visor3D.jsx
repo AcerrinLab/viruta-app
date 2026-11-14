@@ -105,8 +105,10 @@ export default function Visor3D({ piezas, color = 'NATURAL', alto = 320 }) {
         <directionalLight position={[3, 5, 4]} intensity={1.9} color="#fff4e2" />
         <directionalLight position={[-4, 2, -2]} intensity={0.55} color="#e8eef0" />
         {lista.map((c, i) => (
-          <mesh key={i} position={c.centro} geometry={geometrias[i]}>
-            <meshStandardMaterial map={textura} color={tono('#ffffff', c.rol)} roughness={0.62} metalness={0} />
+          <mesh key={i} position={c.centro} geometry={geometrias[i]} renderOrder={c.rol === 'VIDRIO' ? 2 : 0}>
+            {c.rol === 'VIDRIO'
+              ? <meshStandardMaterial color="#DCEBEA" transparent opacity={0.28} roughness={0.08} metalness={0.1} depthWrite={false} />
+              : <meshStandardMaterial map={textura} color={tono('#ffffff', c.rol)} roughness={0.62} metalness={0} />}
           </mesh>
         ))}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.003, 0]}>

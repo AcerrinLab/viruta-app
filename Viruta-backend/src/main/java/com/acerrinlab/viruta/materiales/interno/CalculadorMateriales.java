@@ -11,6 +11,7 @@ import com.acerrinlab.viruta.materiales.ListaMateriales;
 import com.acerrinlab.viruta.materiales.Material;
 import com.acerrinlab.viruta.materiales.MaterialesApi;
 import com.acerrinlab.viruta.materiales.PiezaCorte;
+import com.acerrinlab.viruta.materiales.RolPieza;
 
 /** Motor de materiales. Logica pura y determinista, sin dependencias del framework (RNF-01). */
 public class CalculadorMateriales implements MaterialesApi {
@@ -32,16 +33,24 @@ public class CalculadorMateriales implements MaterialesApi {
         List<PiezaCorte> despiece = agrupar(piezas);
 
         long superficieMm2 = 0;
+        long vidrioMm2 = 0;
         int tornillos = 0;
         int bisagras = 0;
+        List<PiezaCorte> madera = new ArrayList<>();
         for (PiezaCorte p : despiece) {
-            superficieMm2 += (long) p.largo() * p.ancho() * p.cantidad();
+            long area = (long) p.largo() * p.ancho() * p.cantidad();
+            if (p.rol() == RolPieza.VIDRIO) {
+                vidrioMm2 += area;
+            } else {
+                superficieMm2 += area;
+                madera.add(p);
+            }
             tornillos += p.rol().tornillos() * p.cantidad();
             bisagras += p.rol().bisagras() * p.cantidad();
         }
         double superficieM2 = redondear(superficieMm2 / 1_000_000.0, 4);
-        double exactas = CalculadorPlacas.placasExactas(despiece, estrategia.placaLargo(), estrategia.placaAncho());
-        int placas = CalculadorPlacas.placas(despiece, estrategia.placaLargo(), estrategia.placaAncho());
+        double exactas = CalculadorPlacas.placasExactas(madera, estrategia.placaLargo(), estrategia.placaAncho());
+        int placas = CalculadorPlacas.placas(madera, estrategia.placaLargo(), estrategia.placaAncho());
 
         return new ListaMateriales(
                 despiece,
@@ -53,7 +62,8 @@ public class CalculadorMateriales implements MaterialesApi {
                 tornillos,
                 bisagras,
                 estrategia.terminacion(),
-                estrategia.litros(superficieM2 * 2));
+                estrategia.litros(superficieM2 * 2),
+                redondear(vidrioMm2 / 1_000_000.0, 2));
     }
 
     /** Junta las piezas iguales en una sola linea del despiece. */

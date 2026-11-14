@@ -215,6 +215,9 @@ export function Materiales({ lista }) {
           </tbody>
         </table>
       </div>
+      {lista.vidrioM2 > 0 && (
+        <p className="nota">Vidrio para encargar en una vidriería: {String(lista.vidrioM2).replace('.', ',')} m² (estantes y puertas).</p>
+      )}
       <p className="tenue chico">Cantidades estimadas. No incluyen el desperdicio del corte.</p>
     </div>
   );

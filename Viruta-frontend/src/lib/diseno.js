@@ -16,7 +16,20 @@ export const PLANTILLAS = {
     ancho: [400, 2400], alto: [600, 950], profundidad: [400, 650], estantes: [0, 3],
     inicial: { ancho: 800, alto: 850, profundidad: 550, estantes: 1 },
   },
+  RELICARIO: {
+    etiqueta: 'El relicario',
+    coleccion: 'ANTIGUOS',
+    descripcion: 'Vitrina con puertas y estantes de vidrio',
+    ancho: [450, 1000], alto: [1200, 2000], profundidad: [300, 500], estantes: [1, 5],
+    inicial: { ancho: 700, alto: 1700, profundidad: 400, estantes: 3 },
+  },
 };
+
+/** Secciones del catalogo. Las piezas antiguas luego van a formar colecciones. */
+export const COLECCIONES = [
+  ['CLASICOS', 'Clásicos', 'Lo esencial para cualquier ambiente.'],
+  ['ANTIGUOS', 'Antiguos', 'Piezas de estilo, la primera de una colección.'],
+];
 
 export const MATERIALES = { PINO: 'Pino', MELAMINA: 'Melamina', AGLOMERADO: 'Aglomerado' };
 
