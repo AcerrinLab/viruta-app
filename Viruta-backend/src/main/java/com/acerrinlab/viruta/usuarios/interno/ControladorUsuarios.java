@@ -62,10 +62,10 @@ class ControladorUsuarios {
         return servicio.ingresarConGoogle(s.credencial(), s.rol(), s.consentimiento(), origen(peticion));
     }
 
-    /** Le dice al frontend si mostrar el boton de Google. */
+    /** Le dice al frontend que opciones mostrar: boton de Google y verificacion por WhatsApp. */
     @GetMapping("/api/auth/opciones")
     Map<String, Boolean> opciones() {
-        return Map.of("google", google.disponible());
+        return Map.of("google", google.disponible(), "whatsapp", servicio.whatsappDisponible());
     }
 
     @GetMapping("/api/usuarios/yo")

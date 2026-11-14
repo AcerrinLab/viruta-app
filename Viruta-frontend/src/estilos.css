@@ -1069,3 +1069,20 @@ input.codigo { font-size: 1.4rem; letter-spacing: .4em; text-align: center; font
   display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 44px;
   border-radius: 999px; border: 1px dashed var(--borde-medio); color: var(--tenue); font-weight: 600; font-size: .9rem;
 }
+
+/* ---------- Pedidos: filtros y miniatura ---------- */
+.filtros-pedidos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.filtros-pedidos .filtro { min-height: 42px; padding: 0 12px; gap: 8px; flex: 0 1 auto; }
+.filtros-pedidos .filtro select { min-height: 40px !important; font-size: .875rem; padding-right: 4px !important; }
+.pedido-cabeza { display: flex; align-items: center; gap: 16px; }
+.pedido-titulo { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.pedido-precio { font-weight: 700; color: var(--acento-tinta); font-variant-numeric: tabular-nums; }
+.miniatura { flex: none; border-radius: 14px; background: linear-gradient(180deg, #F7F3EC, #ECE5D8); border: 1px solid var(--borde); padding: 4px; }
+.miniatura.vacia { display: inline-block; }
+html[data-tema="oscuro"] .miniatura { background: linear-gradient(180deg, #2A2E29, #1E211D); }
+.pedido-bandeja { gap: 14px; }
+@media (max-width: 767px) {
+  .filtros-pedidos .filtro { flex: 1 1 100%; }
+  .pedido-cabeza { align-items: flex-start; }
+  .pedido-cabeza .chip { display: none; }
+}

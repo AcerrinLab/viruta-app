@@ -8,6 +8,7 @@ import { COLORES, MATERIALES } from '../lib/diseno.js';
 import { medidas, mmACm, pesos } from '../lib/unidades.js';
 import { Icono } from '../componentes/Iconos.jsx';
 import { usarMovil } from '../lib/tema.js';
+import Miniatura from '../componentes/Miniatura.jsx';
 
 const PESTANAS = [
   ['Nuevos', ['PENDIENTE']],
@@ -236,8 +237,9 @@ export default function Panel() {
 
       {visibles.length === 0 && <p className="tenue">No hay pedidos acá.</p>}
       {visibles.map((p) => (
-        <button key={p.id} className="tarjeta elegible fila entre" onClick={() => setParametros({ pedido: p.id })}>
-          <div>
+        <button key={p.id} className="tarjeta elegible fila entre pedido-bandeja" onClick={() => setParametros({ pedido: p.id })}>
+          <Miniatura piezas={p.calculo?.piezas} color={p.diseno.color} tam={56} />
+          <div style={{ flex: 1, minWidth: 0 }}>
             <h3>{!p.leido && <span className="punto" aria-label="Sin leer" />}{p.diseno.nombre}</h3>
             <p className="tenue">{p.cliente.nombre} · {medidas(p.diseno)} · {MATERIALES[p.diseno.material]}</p>
           </div>

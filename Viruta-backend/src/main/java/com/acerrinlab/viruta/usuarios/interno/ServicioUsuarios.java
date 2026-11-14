@@ -174,7 +174,7 @@ class ServicioUsuarios implements UsuariosApi, CommandLineRunner {
         u.ultimoIngreso = reloj.instant();
         usuarios.save(u);
         // Aviso de ingreso desde un dispositivo nuevo, solo si el telefono esta verificado.
-        if (!conocido && !primero && u.telefonoVerificado && u.telefono != null) {
+        if (!conocido && !primero && u.telefonoVerificado && u.telefono != null && whatsapp.disponible()) {
             avisarSinFallar(u.telefono, "Viruta: se inició sesión en tu cuenta desde un dispositivo nuevo ("
                     + dispositivo(origen.agente()) + "). Si no fuiste vos, cambiá tu contraseña.");
         }
@@ -210,6 +210,9 @@ class ServicioUsuarios implements UsuariosApi, CommandLineRunner {
     /** Manda un codigo de 6 digitos por WhatsApp al telefono indicado. */
     @Transactional
     CodigoEnviado enviarCodigo(long id, String telefono) {
+        if (!whatsapp.disponible()) {
+            throw new ErrorNegocio(503, "La verificación por WhatsApp todavía no está disponible.");
+        }
         Usuario u = buscarActivo(id);
         String tel = Telefonos.normalizar(telefono)
                 .orElseThrow(() -> ErrorNegocio.invalido("Escribí el teléfono con código de área, por ejemplo 388 456-7890."));
@@ -325,6 +328,10 @@ class ServicioUsuarios implements UsuariosApi, CommandLineRunner {
         return new ResumenUsuarios(usuarios.countByActivoTrue(), porRol,
                 usuarios.countByActivoTrueAndTelefonoVerificadoTrue(), usuarios.countByActivoTrueAndGoogleIdIsNotNull(),
                 ingresos.countByExitosoFalse(), registros, ultimos, recientes);
+    }
+
+    boolean whatsappDisponible() {
+        return whatsapp.disponible();
     }
 
     // ---------------------------------------------------------------- API para otros modulos

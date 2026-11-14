@@ -118,7 +118,8 @@ public final class GeneradorPiezas {
                     e, e + 5, z, interior, profVidrio, vidrio));
         }
 
-        int puertas = ancho <= 600 ? 1 : 2;
+        // El frente se arma en tres panos de vidrio desde 75 cm, como las vitrinas antiguas.
+        int puertas = ancho <= 600 ? 1 : ancho < 750 ? 2 : 3;
         int luz = 3;
         int marco = 50;
         int anchoPuerta = (ancho - luz * (puertas + 1)) / puertas;

@@ -5,7 +5,7 @@ import { Icono } from './Iconos.jsx';
 const fechaHora = (t) => new Date(t).toLocaleString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 /** Verificacion del telefono con un codigo que llega por WhatsApp. */
-function Telefono({ perfil, alVerificar }) {
+function Telefono({ perfil, alVerificar, whatsapp }) {
   const [telefono, setTelefono] = useState('');
   const [enviado, setEnviado] = useState(null);
   const [codigo, setCodigo] = useState('');
@@ -40,6 +40,21 @@ function Telefono({ perfil, alVerificar }) {
       setOcupado(false);
     }
   };
+
+  if (whatsapp === false && !perfil?.telefonoVerificado) {
+    return (
+      <section className="tarjeta datos">
+        <h3>Teléfono</h3>
+        <div className="verificado">
+          <span className="sello-ok"><Icono nombre="reloj" tam={18} /></span>
+          <div>
+            <strong>Verificación por WhatsApp: próximamente</strong>
+            <span className="tenue chico">Cuando conectemos WhatsApp vas a poder verificar tu número y recibir avisos de tus pedidos y de los inicios de sesión.</span>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="tarjeta datos">
@@ -83,8 +98,10 @@ function Telefono({ perfil, alVerificar }) {
 export function SeguridadCuenta({ sesion, alSalir }) {
   const [perfil, setPerfil] = useState(null);
   const [ingresos, setIngresos] = useState([]);
+  const [whatsapp, setWhatsapp] = useState(null);
 
   useEffect(() => {
+    api('/api/auth/opciones').then((o) => setWhatsapp(!!o.whatsapp)).catch(() => setWhatsapp(false));
     api('/api/usuarios/yo').then(setPerfil).catch(() => {});
     api('/api/usuarios/yo/ingresos').then(setIngresos).catch(() => {});
   }, []);
@@ -97,7 +114,7 @@ export function SeguridadCuenta({ sesion, alSalir }) {
 
   return (
     <>
-      <Telefono perfil={perfil} alVerificar={verificado} />
+      <Telefono perfil={perfil} alVerificar={verificado} whatsapp={whatsapp} />
 
       <section className="tarjeta lista">
         <div className="lista-cabeza"><h3>Inicios de sesión recientes</h3></div>

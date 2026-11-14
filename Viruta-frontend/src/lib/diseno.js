@@ -19,9 +19,9 @@ export const PLANTILLAS = {
   RELICARIO: {
     etiqueta: 'El relicario',
     coleccion: 'ANTIGUOS',
-    descripcion: 'Vitrina con puertas y estantes de vidrio',
+    descripcion: 'Vitrina de tres paños de vidrio con estantes de vidrio',
     ancho: [450, 1000], alto: [1200, 2000], profundidad: [300, 500], estantes: [1, 5],
-    inicial: { ancho: 700, alto: 1700, profundidad: 400, estantes: 3 },
+    inicial: { ancho: 900, alto: 1700, profundidad: 400, estantes: 3 },
   },
 };
 

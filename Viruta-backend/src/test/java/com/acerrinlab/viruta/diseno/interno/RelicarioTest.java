@@ -49,15 +49,26 @@ class RelicarioTest {
     }
 
     @Test
-    void llevaUnaPuertaVidriadaHasta60cmYDosSiEsMasAncho() {
+    void elFrenteSeArmaEnTresPanosDeVidrioDesde75cm() {
         assertEquals(1, contar(relicario(600, 1600, 350, 2), "Vidrio de puerta"));
-        assertEquals(2, contar(relicario(800, 1600, 350, 2), "Vidrio de puerta"));
+        assertEquals(2, contar(relicario(700, 1600, 350, 2), "Vidrio de puerta"));
+        assertEquals(3, contar(relicario(750, 1600, 350, 2), "Vidrio de puerta"));
+        assertEquals(3, contar(relicario(900, 1700, 400, 3), "Vidrio de puerta"));
     }
 
     @Test
     void cadaPuertaSumaDosBisagras() {
-        long bisagras = relicario(800, 1600, 350, 2).stream().mapToLong(p -> p.rol().bisagras()).sum();
-        assertEquals(4, bisagras);
+        assertEquals(4, relicario(700, 1600, 350, 2).stream().mapToLong(p -> p.rol().bisagras()).sum());
+        assertEquals(6, relicario(900, 1600, 350, 2).stream().mapToLong(p -> p.rol().bisagras()).sum());
+    }
+
+    @Test
+    void lasPuertasCubrenElFrenteSinPisarse() {
+        List<PiezaDiseno> vidrios = relicario(900, 1700, 400, 3).stream()
+                .filter(p -> p.nombre().equals("Vidrio de puerta")).sorted((a, b) -> a.x() - b.x()).toList();
+        for (int i = 1; i < vidrios.size(); i++) {
+            assertTrue(vidrios.get(i).x() >= vidrios.get(i - 1).x() + vidrios.get(i - 1).dx(), "los panos no se superponen");
+        }
     }
 
     @Test
