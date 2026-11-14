@@ -128,7 +128,7 @@ public final class GeneradorPiezas {
             int x = luz + i * (anchoPuerta + luz);
             int luzInterior = anchoPuerta - 2 * marco;
             // El montante del lado de las bisagras lleva el rol de puerta (suma las dos bisagras).
-            piezas.add(new PiezaDiseno("Montante", RolPieza.PUERTA, altoPuerta, marco, e,
+            piezas.add(new PiezaDiseno("Montante con bisagras", RolPieza.PUERTA, altoPuerta, marco, e,
                     x, 0, zPuerta, marco, e, altoPuerta));
             piezas.add(new PiezaDiseno("Montante", RolPieza.REFUERZO, altoPuerta, marco, e,
                     x + anchoPuerta - marco, 0, zPuerta, marco, e, altoPuerta));

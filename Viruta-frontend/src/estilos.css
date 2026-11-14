@@ -1019,3 +1019,42 @@ html[data-tema="oscuro"] { --violeta: #B79BE0; --violeta-suave: rgba(183, 155, 2
   .testimonios-pista { grid-auto-columns: 86%; }
   .testimonios-cabeza { text-align: left; }
 }
+
+/* ---------- Google ---------- */
+.google { display: grid; gap: 10px; justify-items: center; }
+.google-boton { width: 100%; display: flex; justify-content: center; min-height: 44px; }
+.google .tenue { text-align: center; }
+.separador { width: 100%; display: flex; align-items: center; gap: 12px; color: var(--tenue); font-size: .8rem; }
+.separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: rgba(118,118,128,.2); }
+.avatar-grande { display: inline-flex; border-radius: 50%; box-shadow: 0 0 0 5px rgba(255,255,255,.7), 0 14px 30px -14px var(--acento); }
+.avatar-grande .avatar { font-weight: 800; }
+html[data-tema="oscuro"] .avatar-grande { box-shadow: 0 0 0 5px rgba(255,255,255,.08); }
+
+/* ---------- Seguridad de la cuenta ---------- */
+textarea {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--borde-medio); border-radius: 12px; resize: vertical;
+  font: 400 1rem/1.5 var(--fuente); color: var(--texto); background: rgba(255,255,255,.82);
+}
+textarea:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-suave); }
+html[data-tema="oscuro"] textarea { background: rgba(0,0,0,.22); }
+.verificar { padding: 16px 20px 20px; }
+.verificado { display: flex; align-items: center; gap: 14px; padding: 16px 20px 20px; }
+.verificado > div { flex: 1; display: grid; gap: 2px; }
+.sello-ok { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--acento-suave); color: var(--acento); flex: none; }
+input.codigo { font-size: 1.4rem; letter-spacing: .4em; text-align: center; font-variant-numeric: tabular-nums; max-width: 240px; }
+.fila-icono.alerta { color: var(--error); background: rgba(166,56,44,.1); }
+
+/* ---------- Administracion ---------- */
+.barras-dias { display: flex; align-items: end; gap: 3px; height: 140px; padding-top: 8px; }
+.barras-dias span { flex: 1; border-radius: 4px 4px 2px 2px; background: color-mix(in srgb, var(--acento) 16%, transparent); min-width: 3px; }
+.barras-dias span.con { background: var(--acento); }
+.testimonio-admin { flex-wrap: wrap; align-items: flex-start; }
+.testimonio-texto { white-space: normal !important; font-size: .9rem; color: var(--texto-medio); }
+.testimonio-admin .fila-texto strong { white-space: normal; }
+.boton.peligro { color: var(--error); }
+.admin-movil { display: none; }
+@media (max-width: 767px) {
+  .admin .cuenta-menu { display: none !important; }
+  .admin-movil { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .admin-movil .opcion { flex: none; text-decoration: none; display: inline-flex; align-items: center; }
+}

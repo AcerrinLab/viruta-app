@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { useSesion } from '../App.jsx';
 import { Selector, aplicarTema } from '../componentes/Comunes.jsx';
 import { IlustracionCliente, IlustracionTaller } from '../componentes/Ilustraciones.jsx';
 import { Icono } from '../componentes/Iconos.jsx';
+import BotonGoogle from '../componentes/BotonGoogle.jsx';
 
 /** Ingreso y registro con rol Cliente o Carpinteria (RF-12). */
 export default function Acceso() {
@@ -26,6 +27,14 @@ export default function Acceso() {
     return () => aplicarTema(sesion?.rol);
   }, [rol, sesion]);
 
+  const despues = useCallback((datos) => {
+    entrar(datos);
+    const volver = parametros.get('volver');
+    if (datos.rol === 'CARPINTERIA') navegar('/panel');
+    else if (datos.rol === 'ADMIN') navegar('/admin');
+    else navegar(volver && volver.startsWith('/') ? volver : '/mis-pedidos');
+  }, [entrar, navegar, parametros]);
+
   const enviar = async (e) => {
     e.preventDefault();
     setError('');
@@ -34,11 +43,7 @@ export default function Acceso() {
       const datos = nuevo
         ? await api('/api/auth/registro', { metodo: 'POST', cuerpo: { nombre, email, clave, rol, consentimiento: acepta } })
         : await api('/api/auth/ingreso', { metodo: 'POST', cuerpo: { email, clave } });
-      entrar({ ...datos, email });
-      const volver = parametros.get('volver');
-      if (datos.rol === 'CARPINTERIA') navegar('/panel');
-      else if (datos.rol === 'ADMIN') navegar('/metricas');
-      else navegar(volver && volver.startsWith('/') ? volver : '/mis-pedidos');
+      despues({ ...datos, email: datos.email || email });
     } catch (problema) {
       setError(problema.message);
     } finally {
@@ -85,6 +90,7 @@ export default function Acceso() {
           )}
           {error && <p className="nota error">{error}</p>}
           <button className="boton ancho" disabled={enviando || (nuevo && !acepta)}>{nuevo ? 'Crear cuenta' : 'Ingresar'}<Icono nombre="flecha" /></button>
+          <BotonGoogle rol={rol} alEntrar={despues} alError={setError} texto={nuevo ? 'signup_with' : 'continue_with'} />
           <p className="acceso-cambio">
             {nuevo ? '¿Ya tenés cuenta?' : '¿Todavía no tenés cuenta?'}
             <button type="button" onClick={() => { setNuevo(!nuevo); setError(''); }}>

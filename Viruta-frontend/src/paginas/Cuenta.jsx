@@ -6,6 +6,8 @@ import { Chip, Interruptor, Selector } from '../componentes/Comunes.jsx';
 import { Icono } from '../componentes/Iconos.jsx';
 import TableroTaller from '../componentes/TableroTaller.jsx';
 import TarjetasTaller from '../componentes/TarjetasTaller.jsx';
+import { Avatar } from '../componentes/Testimonios.jsx';
+import { Comentario, SeguridadCuenta } from '../componentes/SeguridadCuenta.jsx';
 import { MATERIALES } from '../lib/diseno.js';
 import { ESTADOS } from '../lib/estados.js';
 import { guardarTema, olvidarTema, temaGuardado, usarAmbiente, usarMovil } from '../lib/tema.js';
@@ -17,6 +19,7 @@ const SECCIONES = {
     ['perfil', 'persona', 'Perfil'],
     ['proyectos', 'cubo', 'Mis proyectos'],
     ['pedidos', 'bandeja', 'Mis pedidos'],
+    ['comentario', 'enviar', 'Mi comentario'],
     ['preferencias', 'ajustes', 'Preferencias'],
     ['seguridad', 'escudo', 'Seguridad'],
   ],
@@ -25,6 +28,7 @@ const SECCIONES = {
     ['perfil', 'martillo', 'Mi taller'],
     ['pedidos', 'bandeja', 'Pedidos'],
     ['cobros', 'billete', 'Cobros'],
+    ['comentario', 'enviar', 'Mi comentario'],
     ['preferencias', 'ajustes', 'Preferencias'],
     ['seguridad', 'escudo', 'Seguridad'],
   ],
@@ -77,7 +81,7 @@ function Cabecera({ sesion, subtitulo, verificado }) {
   return (
     <header className="perfil-cabecera">
       <div className="perfil-trama" aria-hidden="true" />
-      <span className="avatar grande">{iniciales(sesion.nombre)}</span>
+      <span className="avatar-grande"><Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={96} /></span>
       <div>
         <h1>
           {sesion.nombre}
@@ -197,7 +201,8 @@ function CuentaCliente({ seccion, sesion, salir }) {
         </section>
       )}
       {seccion === 'preferencias' && <Preferencias />}
-      {seccion === 'seguridad' && <Seguridad sesion={sesion} alSalir={salir} />}
+      {seccion === 'comentario' && <Comentario />}
+      {seccion === 'seguridad' && <SeguridadCuenta sesion={sesion} alSalir={salir} />}
     </>
   );
 }
@@ -315,7 +320,8 @@ function CuentaTaller({ seccion, sesion, salir }) {
       )}
 
       {seccion === 'preferencias' && <Preferencias />}
-      {seccion === 'seguridad' && <Seguridad sesion={sesion} alSalir={salir} />}
+      {seccion === 'comentario' && <Comentario />}
+      {seccion === 'seguridad' && <SeguridadCuenta sesion={sesion} alSalir={salir} />}
     </>
   );
 }
@@ -361,7 +367,7 @@ function Hub({ sesion, secciones, salir }) {
   return (
     <main className="hub">
       <div className="hub-perfil">
-        <span className="avatar grande">{iniciales(sesion.nombre)}</span>
+        <span className="avatar-grande"><Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={88} /></span>
         <h1>{sesion.nombre}</h1>
         <p className="tenue">{sesion.email || (taller ? 'Carpintería' : 'Cliente')}</p>
       </div>
@@ -435,7 +441,7 @@ export default function Cuenta() {
         </nav>
         <Accesos sesion={sesion} plegado={plegado === true} />
         <Link to="/cuenta/perfil" className="tarjeta-usuario" title={sesion.nombre}>
-          <span className="avatar">{iniciales(sesion.nombre)}</span>
+          <Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={32} />
           <span className="tarjeta-usuario-texto"><strong>{sesion.nombre}</strong><span>{taller ? 'Carpintería' : 'Cliente'}</span></span>
         </Link>
       </aside>
