@@ -141,6 +141,7 @@ Sin esas variables, el botón no aparece y todo lo demás funciona igual.
 ### Verificación de teléfono y avisos de ingreso
 El código de 6 dígitos y el aviso de "inicio de sesión desde un dispositivo nuevo" salen por el mismo
 webhook de n8n que los avisos de pedidos (`N8N_WEBHOOK_URL`). Sin n8n, el mensaje queda solo en el log.
+WhatsApp está apagado por defecto hasta tener la API de Meta: cuando el flujo de n8n ya envíe por Meta, poné `WHATSAPP_HABILITADO=true`. Detalle completo en TRASPASO_VIRUTA.md.
 
 ### Contador de la lista de espera desde Google Sheets
 En el Apps Script de la planilla de la wishlist, agregá esta función junto a `doPost` y volvé a implementar
