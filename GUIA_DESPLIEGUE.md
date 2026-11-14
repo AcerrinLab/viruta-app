@@ -124,3 +124,45 @@ Si n8n falla, el backend reintenta tres veces y el pedido queda igual en el pane
 | Al recargar una página de Vercel aparece 404 | Falta `vercel.json` en `Viruta-frontend`. |
 | El pago queda en *Presupuesto listo* | El webhook de Mercado Pago no llega o la clave secreta no coincide. |
 | No aparece la carpintería en el mapa | Le falta la zona o el WhatsApp en su perfil, o no trabaja ese material. |
+
+## Funciones nuevas (feature/002): qué configurar
+
+### Administradores maestros
+En el backend, `VIRUTA_ADMINS` con el formato `Nombre|email|clave;Nombre|email|clave`.
+Si una persona va sin clave (`Nombre|email`), entra solo con Google usando ese email.
+Al arrancar, el backend crea esas cuentas o las asciende a administrador. El panel está en `/admin`.
+
+### Ingreso con Google
+1. En console.cloud.google.com > APIs y servicios > Credenciales, creá un "ID de cliente de OAuth" de tipo Aplicación web.
+2. En "Orígenes autorizados de JavaScript" agregá la URL del frontend (y `http://localhost:5173` para desarrollo).
+3. El mismo client id va en dos lugares: `GOOGLE_CLIENT_ID` (backend) y `VITE_GOOGLE_CLIENT_ID` (frontend, Vercel).
+Sin esas variables, el botón no aparece y todo lo demás funciona igual.
+
+### Verificación de teléfono y avisos de ingreso
+El código de 6 dígitos y el aviso de "inicio de sesión desde un dispositivo nuevo" salen por el mismo
+webhook de n8n que los avisos de pedidos (`N8N_WEBHOOK_URL`). Sin n8n, el mensaje queda solo en el log.
+
+### Contador de la lista de espera desde Google Sheets
+En el Apps Script de la planilla de la wishlist, agregá esta función junto a `doPost` y volvé a implementar
+(Implementar > Administrar implementaciones > editar > Nueva versión):
+
+```js
+function doGet() {
+  var libro = SpreadsheetApp.getActiveSpreadsheet();
+  function filas(nombre) {
+    var hoja = libro.getSheetByName(nombre);
+    return hoja ? Math.max(0, hoja.getLastRow() - 1) : 0;
+  }
+  var datos = { clientes: filas('CLIENT'), talleres: filas('WORKSHOP') };
+  return ContentService.createTextOutput(JSON.stringify(datos)).setMimeType(ContentService.MimeType.JSON);
+}
+```
+
+Después poné la URL `/exec` en `WISHLIST_SHEETS_URL` (backend). El inicio muestra esos números
+(se actualizan cada 5 minutos) y el botón lleva a la wishlist (`VITE_WISHLIST_URL`, por defecto
+https://viruta-wishlist.vercel.app/).
+
+### Testimonios
+Se cargan y aprueban desde `/admin/testimonios`. Cada usuario también puede dejar el suyo desde
+Cuenta > Mi comentario; queda pendiente hasta que un admin lo aprueba. Si la cuenta entró con Google,
+se muestra su foto de perfil.
