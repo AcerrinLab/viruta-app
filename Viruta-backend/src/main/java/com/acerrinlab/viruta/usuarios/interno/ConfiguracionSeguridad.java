@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,9 +27,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import jakarta.servlet.DispatcherType;
 
-/** Seguridad de la API: JWT sin estado, autorizacion por rol y CORS limitado al frontend (RNF-08). */
+/**
+ * Seguridad de la API con Spring Security: JWT sin estado, autorizacion por rol (por ruta y con
+ * @PreAuthorize en los metodos de administracion), ingreso con Google y CORS limitado al frontend (RNF-08).
+ */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 class ConfiguracionSeguridad {
 
     @Bean
@@ -66,8 +71,9 @@ class ConfiguracionSeguridad {
                                 "/api/lista-espera/**", "/api/pagos/webhook", "/api/salud", "/error",
                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/carpinterias").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/testimonios").permitAll()
                         .requestMatchers("/api/carpinteria/**").hasRole("CARPINTERIA")
-                        .requestMatchers("/api/metricas").hasRole("ADMIN")
+                        .requestMatchers("/api/metricas", "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/proyectos/**", "/api/pedidos/**", "/api/pagos/**").hasRole("CLIENTE")
                         .anyRequest().authenticated())
                 .addFilterBefore(new FiltroJwt(jwt), UsernamePasswordAuthenticationFilter.class);

@@ -31,4 +31,14 @@ class Usuario {
     /** Consentimiento explicito para tratar sus datos (Ley 25.326). */
     boolean consentimiento;
     Instant creado;
+    /** Foto de perfil (la de Google, si entro con Google). */
+    @Column(length = 500)
+    String fotoUrl;
+    /** Telefono normalizado (10 digitos) y si ya se verifico con un codigo. */
+    String telefono;
+    boolean telefonoVerificado;
+    /** Identificador de la cuenta de Google vinculada. */
+    @Column(unique = true)
+    String googleId;
+    Instant ultimoIngreso;
 }

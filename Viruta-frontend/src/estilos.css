@@ -992,3 +992,30 @@ html[data-tema="oscuro"] { --violeta: #B79BE0; --violeta-suave: rgba(183, 155, 2
 .tarjeta.pieza-antigua svg { color: var(--violeta) !important; }
 .tarjeta.pieza-antigua:hover { border-color: var(--violeta); box-shadow: 0 0 0 5px var(--violeta-suave), 0 16px 34px -16px rgba(123,94,167,.4); }
 .pieza-sello { justify-self: start; font-size: .72rem; font-weight: 600; color: var(--violeta); }
+
+/* ---------- Lista de espera conectada a la wishlist ---------- */
+.espera-numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.espera-numeros > div { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: rgba(118,118,128,.08); }
+.espera-numeros .numero { font-size: 1.5rem; }
+@media (max-width: 1023px) { .espera { margin-left: auto !important; margin-right: auto !important; } }
+
+/* ---------- Testimonios ---------- */
+.testimonios { margin-top: 56px; display: grid; gap: 18px; }
+.testimonios-cabeza { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.testimonios-cabeza h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); letter-spacing: -0.02em; margin-top: 4px; }
+.testimonios-pista {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(280px, calc((100% - 32px) / 3)); gap: 16px;
+  overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; scrollbar-width: none;
+}
+.testimonios-pista::-webkit-scrollbar { display: none; }
+.testimonio { scroll-snap-align: start; display: grid; gap: 16px; align-content: start; padding: 22px; border-radius: 20px; }
+.testimonio header { display: flex; gap: 14px; align-items: center; }
+.testimonio header div { display: grid; gap: 2px; min-width: 0; }
+.testimonio header .tenue { font-size: .85rem; line-height: 1.35; }
+.testimonio blockquote { margin: 0; font-size: 1.02rem; line-height: 1.6; color: var(--texto); }
+.avatar-foto { border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 3px rgba(255,255,255,.7); }
+.vacio-testimonios { justify-items: start; }
+@media (max-width: 767px) {
+  .testimonios-pista { grid-auto-columns: 86%; }
+  .testimonios-cabeza { text-align: left; }
+}

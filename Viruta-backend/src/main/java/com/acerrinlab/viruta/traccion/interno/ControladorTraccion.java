@@ -32,9 +32,11 @@ class ControladorTraccion {
     private final PedidosApi pedidos;
     private final PagosApi pagos;
     private final Clock reloj;
+    private final FuenteWishlist wishlist;
 
     ControladorTraccion(RepositorioInscriptos inscriptos, UsuariosApi usuarios, DisenoApi diseno, PedidosApi pedidos,
-            PagosApi pagos, Clock reloj) {
+            PagosApi pagos, Clock reloj, FuenteWishlist wishlist) {
+        this.wishlist = wishlist;
         this.inscriptos = inscriptos;
         this.usuarios = usuarios;
         this.diseno = diseno;
@@ -46,7 +48,8 @@ class ControladorTraccion {
     record SolicitudInscripcion(String email, String tipo, Boolean consentimiento) {
     }
 
-    record Contador(long total, long clientes, long carpinterias) {
+    /** fuente: "wishlist" si los numeros vienen de la planilla de Google Sheets, "local" si no. */
+    record Contador(long total, long clientes, long carpinterias, String fuente) {
     }
 
     @PostMapping("/api/lista-espera")
@@ -72,9 +75,13 @@ class ControladorTraccion {
 
     @GetMapping("/api/lista-espera/contador")
     Contador contador() {
-        long clientes = inscriptos.countByTipo("CLIENTE");
-        long carpinterias = inscriptos.countByTipo("CARPINTERIA");
-        return new Contador(clientes + carpinterias, clientes, carpinterias);
+        return wishlist.conteo()
+                .map(c -> new Contador(c.total(), c.clientes(), c.talleres(), "wishlist"))
+                .orElseGet(() -> {
+                    long clientes = inscriptos.countByTipo("CLIENTE");
+                    long carpinterias = inscriptos.countByTipo("CARPINTERIA");
+                    return new Contador(clientes + carpinterias, clientes, carpinterias, "local");
+                });
     }
 
     @GetMapping("/api/metricas")
