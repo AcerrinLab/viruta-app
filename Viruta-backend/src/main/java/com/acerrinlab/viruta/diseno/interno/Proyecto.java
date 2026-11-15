@@ -7,6 +7,9 @@ import com.acerrinlab.viruta.diseno.DatosDiseno;
 import com.acerrinlab.viruta.diseno.Plantilla;
 import com.acerrinlab.viruta.materiales.Material;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,14 +29,17 @@ class Proyecto {
     Long clienteId;
     String nombre;
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     Plantilla plantilla;
     int ancho;
     int alto;
     int profundidad;
     int estantes;
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     Material material;
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     ColorMueble color;
     Integer espacioAncho;
     Integer espacioAlto;

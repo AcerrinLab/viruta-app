@@ -17,7 +17,10 @@ const SECCIONES = {
     ['Bandeja de pedidos', '/panel', 'bandeja'], ['Resumen', '/cuenta/resumen', 'grafico'], ['Mi taller', '/cuenta/perfil', 'martillo'],
     ['Cobros', '/cuenta/cobros', 'billete'], ['Preferencias', '/cuenta/preferencias', 'ajustes'], ['Seguridad', '/cuenta/seguridad', 'escudo'],
   ],
-  ADMIN: [['Métricas', '/metricas', 'grafico']],
+  ADMIN: [
+    ['Administración', '/admin/resumen', 'grafico'], ['Usuarios', '/admin/usuarios', 'persona'], ['Pedidos', '/admin/pedidos', 'bandeja'],
+    ['Testimonios', '/admin/testimonios', 'enviar'], ['Lista de espera', '/admin/espera', 'campana'], ['Inicios de sesión', '/admin/ingresos', 'escudo'],
+  ],
 };
 
 const normal = (t) => (t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();

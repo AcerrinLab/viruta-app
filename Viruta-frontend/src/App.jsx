@@ -8,7 +8,8 @@ import Carpinterias from './paginas/Carpinterias.jsx';
 import MisPedidos from './paginas/MisPedidos.jsx';
 import Panel from './paginas/Panel.jsx';
 import PagoSimulado from './paginas/PagoSimulado.jsx';
-import Metricas from './paginas/Metricas.jsx';
+import Admin from './paginas/Admin.jsx';
+import { Avatar } from './componentes/Testimonios.jsx';
 import Cuenta from './paginas/Cuenta.jsx';
 import Buscador from './componentes/Buscador.jsx';
 import { Interruptor, aplicarTema } from './componentes/Comunes.jsx';
@@ -52,7 +53,7 @@ function Usuario({ sesion, alSalir }) {
   return (
     <div className="usuario" ref={caja}>
       <button className="usuario-boton" aria-haspopup="menu" aria-expanded={abierto} onClick={() => setAbierto(!abierto)}>
-        <span className="avatar" aria-hidden="true">{iniciales(sesion.nombre)}</span>
+        <Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={32} />
         <span className="usuario-nombre">{nombre.split(' ')[0]}</span>
       </button>
       {abierto && (
@@ -64,7 +65,9 @@ function Usuario({ sesion, alSalir }) {
           <div className="menu-grupo">
             {(taller
               ? [['resumen', 'grafico', 'Resumen'], ['perfil', 'martillo', 'Mi taller'], ['pedidos', 'bandeja', 'Pedidos']]
-              : [['perfil', 'persona', 'Mi perfil'], ['proyectos', 'cubo', 'Mis proyectos'], ['pedidos', 'bandeja', 'Mis pedidos']]
+              : sesion.rol === 'ADMIN'
+                ? [['perfil', 'persona', 'Mi perfil'], ['seguridad', 'escudo', 'Seguridad']]
+                : [['perfil', 'persona', 'Mi perfil'], ['proyectos', 'cubo', 'Mis proyectos'], ['pedidos', 'bandeja', 'Mis pedidos']]
             ).map(([id, icono, texto]) => (
               <Link key={id} className="item" role="menuitem" to={'/cuenta/' + id} onClick={cerrar}>
                 <Icono nombre={icono} tam={16} />{texto}
@@ -148,17 +151,19 @@ export default function App() {
       </div>
       <header className="barra">
         <Link to="/" className="marca" aria-label="Viruta, inicio">
-          <svg viewBox="0 0 32 32" aria-hidden="true">
-            <rect className="fondo-marca" width="32" height="32" rx="9" />
-            <path d="M9 9l7 15 7-15" fill="none" stroke="#E2C8A2" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+          <svg viewBox="0 0 40 40" aria-hidden="true">
+            <rect className="fondo-marca" x="1" y="1" width="38" height="38" rx="10" />
+            <path d="M9 27c6-1 11-5 13-11 1-3 4-5 9-5" fill="none" stroke="#E2C8A2" strokeWidth="2.6" strokeLinecap="round" />
+            <path d="M9 31h22" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" />
+            <path d="M12 21c4-1 7-3 8-7" fill="none" stroke="#D4A373" strokeWidth="2.2" strokeLinecap="round" />
           </svg>
-          <span>Viruta</span>
+          <span>VIRUTA</span>
         </Link>
         <nav>
           {(!sesion || sesion.rol === 'CLIENTE') && <NavLink to="/disenar" className={(e) => 'solo-escritorio ' + activo(e)}>Diseñar</NavLink>}
           {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={(e) => 'solo-escritorio ' + activo(e)}>Mis pedidos</NavLink>}
           {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={(e) => 'solo-escritorio ' + activo(e)}>Panel</NavLink>}
-          {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={(e) => 'solo-escritorio ' + activo(e)}>Métricas</NavLink>}
+          {sesion?.rol === 'ADMIN' && <NavLink to="/admin" className={(e) => 'solo-escritorio ' + activo(e)}>Administración</NavLink>}
           <Buscador sesion={sesion} />
           <BotonTema />
           {sesion ? <Usuario sesion={sesion} alSalir={salir} /> : <NavLink to="/ingresar" className={(e) => 'solo-escritorio ' + activo(e)}>Ingresar</NavLink>}
@@ -170,7 +175,7 @@ export default function App() {
         {sesion?.rol === 'CLIENTE' && <NavLink to="/cuenta/proyectos" className={activo}><Icono nombre="lista" tam={22} /><span>Proyectos</span></NavLink>}
         {sesion?.rol === 'CLIENTE' && <NavLink to="/mis-pedidos" className={activo}><Icono nombre="bandeja" tam={22} /><span>Pedidos</span></NavLink>}
         {sesion?.rol === 'CARPINTERIA' && <NavLink to="/panel" className={activo}><Icono nombre="martillo" tam={22} /><span>Panel</span></NavLink>}
-        {sesion?.rol === 'ADMIN' && <NavLink to="/metricas" className={activo}><Icono nombre="grafico" tam={22} /><span>Métricas</span></NavLink>}
+        {sesion?.rol === 'ADMIN' && <NavLink to="/admin" className={activo}><Icono nombre="grafico" tam={22} /><span>Administración</span></NavLink>}
         {sesion
           ? <NavLink to="/cuenta" end className={({ isActive }) => (isActive || (window.location.pathname.startsWith('/cuenta/') && !window.location.pathname.endsWith('/proyectos')) ? 'activo' : '')}><Icono nombre="persona" tam={22} /><span>Cuenta</span></NavLink>
           : <NavLink to="/ingresar" className={activo}><Icono nombre="persona" tam={22} /><span>Ingresar</span></NavLink>}
@@ -185,7 +190,9 @@ export default function App() {
         <Route path="/panel" element={<Solo rol="CARPINTERIA"><Panel /></Solo>} />
         <Route path="/cuenta" element={<Cuenta />} />
         <Route path="/cuenta/:seccion" element={<Cuenta />} />
-        <Route path="/metricas" element={<Solo rol="ADMIN"><Metricas /></Solo>} />
+        <Route path="/admin" element={<Solo rol="ADMIN"><Admin /></Solo>} />
+        <Route path="/admin/:seccion" element={<Solo rol="ADMIN"><Admin /></Solo>} />
+        <Route path="/metricas" element={<Navigate to="/admin" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Sesion.Provider>

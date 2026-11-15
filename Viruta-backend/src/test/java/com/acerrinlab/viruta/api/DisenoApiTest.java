@@ -46,9 +46,12 @@ class DisenoApiTest extends PruebaApi {
     void lasPlantillasSePublicanConSusRangos() throws Exception {
         obtener("/api/plantillas", null)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(jsonPath("$[0].id").value("ESTANTE"))
-                .andExpect(jsonPath("$[0].ancho[1]").value(2400));
+                .andExpect(jsonPath("$[0].ancho[1]").value(2400))
+                .andExpect(jsonPath("$[0].coleccion").value("CLASICOS"))
+                .andExpect(jsonPath("$[3].id").value("RELICARIO"))
+                .andExpect(jsonPath("$[3].coleccion").value("ANTIGUOS"));
     }
 
     @Test

@@ -5,13 +5,14 @@ import { useSesion } from '../App.jsx';
 import Visor3D from '../componentes/Visor3D.jsx';
 import VistaAR from '../componentes/VistaAR.jsx';
 import { CampoCm, GuiaMedir, Materiales, Medida, Pasos, Selector } from '../componentes/Comunes.jsx';
-import { COLORES, MATERIALES, PLANTILLAS, aSolicitud, disenoInicial, tieneEspacio } from '../lib/diseno.js';
+import { COLECCIONES, COLORES, MATERIALES, PLANTILLAS, aSolicitud, disenoInicial, tieneEspacio } from '../lib/diseno.js';
 import { Icono } from '../componentes/Iconos.jsx';
 
 const DIBUJOS = {
   ESTANTE: 'M14 6v36M34 6v36M14 8h20M14 24h20M14 40h20',
   MESA: 'M6 16h36M10 16v24M38 16v24',
   BAJO_MESADA: 'M8 12h32v28H8zM24 12v28M20 26h1M27 26h1',
+  RELICARIO: 'M12 4h24l2 3v35H10V7l2-3ZM10 42h28M14 9h9v29h-9zM25 9h9v29h-9zM14 19h9M14 28h9M25 19h9M25 28h9M22 23h.5M26 23h.5',
 };
 
 /** F1 y F2: elegir plantilla, medir y ajustar con 3D y AR, y ver que comprar. */
@@ -87,16 +88,35 @@ export default function Disenar() {
         <Pasos hechos={1} total={3} />
         <h2>¿Qué querés hacer?</h2>
         {error && <p className="nota error">{error}</p>}
-        <div className="tres">
-          {Object.entries(PLANTILLAS).map(([id, p]) => (
-            <button key={id} className="tarjeta elegible pila" onClick={() => { setDiseno(disenoInicial(id)); setProyectoId(null); setPaso(2); }}>
-              <svg viewBox="0 0 48 48" width="72" height="72" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d={DIBUJOS[id]} />
-              </svg>
-              <h3>{p.etiqueta}</h3>
-            </button>
-          ))}
-        </div>
+        {COLECCIONES.map(([coleccion, titulo, bajada]) => {
+          const lista = Object.entries(PLANTILLAS).filter(([, p]) => (p.coleccion || 'CLASICOS') === coleccion);
+          if (lista.length === 0) return null;
+          const antiguos = coleccion === 'ANTIGUOS';
+          return (
+            <section key={coleccion} className={'coleccion' + (antiguos ? ' antiguos' : '')}>
+              <div className="coleccion-cabeza">
+                <h3>{titulo}</h3>
+                {antiguos && <span className="insignia-nueva">Nuevo</span>}
+                <span className="tenue chico">{bajada}</span>
+              </div>
+              <div className="tres">
+                {lista.map(([id, p]) => (
+                  <button key={id} className={'tarjeta elegible pila' + (antiguos ? ' pieza-antigua' : '')}
+                    onClick={() => { setDiseno(disenoInicial(id)); setProyectoId(null); setPaso(2); }}>
+                    <svg viewBox="0 0 48 48" width="72" height="72" fill="none" stroke="currentColor" strokeWidth={antiguos ? 2 : 2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d={DIBUJOS[id]} />
+                    </svg>
+                    <div>
+                      <h3>{p.etiqueta}</h3>
+                      {p.descripcion && <p className="tenue chico">{p.descripcion}</p>}
+                    </div>
+                    {antiguos && <span className="pieza-sello">Colección Antiguos</span>}
+                  </button>
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </main>
     );
   }

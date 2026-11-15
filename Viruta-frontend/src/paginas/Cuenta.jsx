@@ -6,6 +6,8 @@ import { Chip, Interruptor, Selector } from '../componentes/Comunes.jsx';
 import { Icono } from '../componentes/Iconos.jsx';
 import TableroTaller from '../componentes/TableroTaller.jsx';
 import TarjetasTaller from '../componentes/TarjetasTaller.jsx';
+import { Avatar } from '../componentes/Testimonios.jsx';
+import { Comentario, SeguridadCuenta } from '../componentes/SeguridadCuenta.jsx';
 import { MATERIALES } from '../lib/diseno.js';
 import { ESTADOS } from '../lib/estados.js';
 import { guardarTema, olvidarTema, temaGuardado, usarAmbiente, usarMovil } from '../lib/tema.js';
@@ -13,10 +15,18 @@ import { medidas, pesos } from '../lib/unidades.js';
 
 /** Secciones de la cuenta segun el rol: icono y nombre, como un menu de ajustes. */
 const SECCIONES = {
+  // Los administradores no son clientes: si usaran las secciones del cliente, la pagina pediria
+  // /api/pedidos y /api/proyectos y el backend respondería 403 (Forbidden).
+  ADMIN: [
+    ['perfil', 'persona', 'Perfil'],
+    ['preferencias', 'ajustes', 'Preferencias'],
+    ['seguridad', 'escudo', 'Seguridad'],
+  ],
   CLIENTE: [
     ['perfil', 'persona', 'Perfil'],
     ['proyectos', 'cubo', 'Mis proyectos'],
     ['pedidos', 'bandeja', 'Mis pedidos'],
+    ['comentario', 'enviar', 'Mi comentario'],
     ['preferencias', 'ajustes', 'Preferencias'],
     ['seguridad', 'escudo', 'Seguridad'],
   ],
@@ -25,6 +35,7 @@ const SECCIONES = {
     ['perfil', 'martillo', 'Mi taller'],
     ['pedidos', 'bandeja', 'Pedidos'],
     ['cobros', 'billete', 'Cobros'],
+    ['comentario', 'enviar', 'Mi comentario'],
     ['preferencias', 'ajustes', 'Preferencias'],
     ['seguridad', 'escudo', 'Seguridad'],
   ],
@@ -77,7 +88,7 @@ function Cabecera({ sesion, subtitulo, verificado }) {
   return (
     <header className="perfil-cabecera">
       <div className="perfil-trama" aria-hidden="true" />
-      <span className="avatar grande">{iniciales(sesion.nombre)}</span>
+      <span className="avatar-grande"><Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={96} /></span>
       <div>
         <h1>
           {sesion.nombre}
@@ -149,6 +160,27 @@ function Seguridad({ sesion, alSalir }) {
 
 /* ---------------- Cliente ---------------- */
 
+/* ---------------- Administracion ---------------- */
+
+function CuentaAdmin({ seccion, sesion, salir }) {
+  return (
+    <>
+      {seccion === 'perfil' && (
+        <>
+          <Cabecera sesion={sesion} subtitulo={sesion.email || 'Administración'} />
+          <Datos titulo="Datos de la cuenta" filas={[
+            ['Nombre completo', sesion.nombre],
+            ['Email', sesion.email],
+            ['Tipo de cuenta', 'Administración'],
+          ]} pie={<Link to="/admin" className="boton claro" style={{ margin: '16px 20px 20px' }}><Icono nombre="grafico" />Ir al panel de administración</Link>} />
+        </>
+      )}
+      {seccion === 'preferencias' && <Preferencias />}
+      {seccion === 'seguridad' && <SeguridadCuenta sesion={sesion} alSalir={salir} />}
+    </>
+  );
+}
+
 function CuentaCliente({ seccion, sesion, salir }) {
   const [pedidos, setPedidos] = useState(null);
   const [proyectos, setProyectos] = useState(null);
@@ -197,7 +229,8 @@ function CuentaCliente({ seccion, sesion, salir }) {
         </section>
       )}
       {seccion === 'preferencias' && <Preferencias />}
-      {seccion === 'seguridad' && <Seguridad sesion={sesion} alSalir={salir} />}
+      {seccion === 'comentario' && <Comentario />}
+      {seccion === 'seguridad' && <SeguridadCuenta sesion={sesion} alSalir={salir} />}
     </>
   );
 }
@@ -315,7 +348,8 @@ function CuentaTaller({ seccion, sesion, salir }) {
       )}
 
       {seccion === 'preferencias' && <Preferencias />}
-      {seccion === 'seguridad' && <Seguridad sesion={sesion} alSalir={salir} />}
+      {seccion === 'comentario' && <Comentario />}
+      {seccion === 'seguridad' && <SeguridadCuenta sesion={sesion} alSalir={salir} />}
     </>
   );
 }
@@ -326,6 +360,7 @@ function Accesos({ sesion, plegado }) {
   const [items, setItems] = useState([]);
   const taller = sesion.rol === 'CARPINTERIA';
   useEffect(() => {
+    if (sesion.rol === 'ADMIN') return;
     const ruta = taller ? '/api/carpinteria/pedidos' : '/api/proyectos';
     api(ruta).then((lista) => {
       const orden = [...(lista || [])].sort((a, b) => String(b.actualizado || b.creado || '').localeCompare(String(a.actualizado || a.creado || '')));
@@ -361,13 +396,13 @@ function Hub({ sesion, secciones, salir }) {
   return (
     <main className="hub">
       <div className="hub-perfil">
-        <span className="avatar grande">{iniciales(sesion.nombre)}</span>
+        <span className="avatar-grande"><Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={88} /></span>
         <h1>{sesion.nombre}</h1>
-        <p className="tenue">{sesion.email || (taller ? 'Carpintería' : 'Cliente')}</p>
+        <p className="tenue">{sesion.email || (taller ? 'Carpintería' : sesion.rol === 'ADMIN' ? 'Administración' : 'Cliente')}</p>
       </div>
-      <Link to={taller ? '/panel' : '/disenar'} className="hub-destacado">
+      <Link to={taller ? '/panel' : sesion.rol === 'ADMIN' ? '/admin' : '/disenar'} className="hub-destacado">
         <Icono nombre={taller ? 'bandeja' : 'cubo'} tam={20} />
-        <span>{taller ? 'Abrir la bandeja de pedidos' : 'Diseñar un mueble nuevo'}</span>
+        <span>{taller ? 'Abrir la bandeja de pedidos' : sesion.rol === 'ADMIN' ? 'Abrir el panel de administración' : 'Diseñar un mueble nuevo'}</span>
         <svg className="hub-arte" viewBox="0 0 120 90" aria-hidden="true">
           <rect x="30" y="14" width="8" height="70" rx="2" fill="#D4A373" />
           <rect x="90" y="14" width="8" height="70" rx="2" fill="#D4A373" />
@@ -435,8 +470,8 @@ export default function Cuenta() {
         </nav>
         <Accesos sesion={sesion} plegado={plegado === true} />
         <Link to="/cuenta/perfil" className="tarjeta-usuario" title={sesion.nombre}>
-          <span className="avatar">{iniciales(sesion.nombre)}</span>
-          <span className="tarjeta-usuario-texto"><strong>{sesion.nombre}</strong><span>{taller ? 'Carpintería' : 'Cliente'}</span></span>
+          <Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={32} />
+          <span className="tarjeta-usuario-texto"><strong>{sesion.nombre}</strong><span>{taller ? 'Carpintería' : sesion.rol === 'ADMIN' ? 'Administración' : 'Cliente'}</span></span>
         </Link>
       </aside>
       <section className="cuenta-contenido">
@@ -447,7 +482,9 @@ export default function Cuenta() {
         </p>
         {taller
           ? <CuentaTaller seccion={seccion} sesion={sesion} salir={salir} />
-          : <CuentaCliente seccion={seccion} sesion={sesion} salir={salir} />}
+          : sesion.rol === 'ADMIN'
+            ? <CuentaAdmin seccion={seccion} sesion={sesion} salir={salir} />
+            : <CuentaCliente seccion={seccion} sesion={sesion} salir={salir} />}
       </section>
     </main>
   );

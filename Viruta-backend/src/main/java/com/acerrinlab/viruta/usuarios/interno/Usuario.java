@@ -4,6 +4,11 @@ import java.time.Instant;
 
 import com.acerrinlab.viruta.usuarios.Rol;
 
+import org.hibernate.annotations.ColumnDefault;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,9 +31,23 @@ class Usuario {
     /** Contrasena cifrada con BCrypt. Nunca se guarda en texto plano. */
     String clave;
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     Rol rol;
     boolean activo;
     /** Consentimiento explicito para tratar sus datos (Ley 25.326). */
     boolean consentimiento;
     Instant creado;
+    /** Foto de perfil (la de Google, si entro con Google). */
+    @Column(length = 500)
+    String fotoUrl;
+    /** Telefono normalizado (10 digitos) y si ya se verifico con un codigo. */
+    String telefono;
+    /** Con valor por defecto para que la columna se pueda agregar a bases que ya tienen usuarios. */
+    @ColumnDefault("false")
+    @Column(nullable = false)
+    boolean telefonoVerificado;
+    /** Identificador de la cuenta de Google vinculada. */
+    @Column(unique = true)
+    String googleId;
+    Instant ultimoIngreso;
 }

@@ -976,3 +976,135 @@ html[data-tema="oscuro"] .luz { opacity: .2; }
 }
 @media (max-width: 767px) { .cuenta-menu { display: none !important; } }
 @media (max-width: 767px) { .tres .numero { font-size: 1.45rem; white-space: nowrap; } }
+
+/* ---------- Catalogo por colecciones ---------- */
+.coleccion { display: grid; gap: 12px; }
+.coleccion + .coleccion { margin-top: 12px; }
+.coleccion-cabeza { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.coleccion-cabeza h3 { font-size: 1.05rem; }
+:root { --violeta: #7B5EA7; --violeta-suave: rgba(123, 94, 167, .12); }
+html[data-tema="oscuro"] { --violeta: #B79BE0; --violeta-suave: rgba(183, 155, 224, .16); }
+.insignia-nueva {
+  display: inline-flex; align-items: center; min-height: 22px; padding: 0 9px; border-radius: 999px;
+  font-size: .72rem; font-weight: 700; color: var(--violeta); background: var(--violeta-suave);
+}
+.tarjeta.pieza-antigua { border: 1.5px solid var(--violeta); box-shadow: 0 0 0 4px var(--violeta-suave), var(--vidrio-sombra); }
+.tarjeta.pieza-antigua svg { color: var(--violeta) !important; }
+.tarjeta.pieza-antigua:hover { border-color: var(--violeta); box-shadow: 0 0 0 5px var(--violeta-suave), 0 16px 34px -16px rgba(123,94,167,.4); }
+.pieza-sello { justify-self: start; font-size: .72rem; font-weight: 600; color: var(--violeta); }
+
+/* ---------- Lista de espera conectada a la wishlist ---------- */
+.espera-numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.espera-numeros > div { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: rgba(118,118,128,.08); }
+.espera-numeros .numero { font-size: 1.5rem; }
+@media (max-width: 1023px) { .espera { margin-left: auto !important; margin-right: auto !important; } }
+
+/* ---------- Testimonios ---------- */
+.testimonios { margin-top: 56px; display: grid; gap: 18px; }
+.testimonios-cabeza { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.testimonios-cabeza h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); letter-spacing: -0.02em; margin-top: 4px; }
+.testimonios-pista {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(280px, calc((100% - 32px) / 3)); gap: 16px;
+  overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; scrollbar-width: none;
+}
+.testimonios-pista::-webkit-scrollbar { display: none; }
+.testimonio { scroll-snap-align: start; display: grid; gap: 16px; align-content: start; padding: 22px; border-radius: 20px; }
+.testimonio header { display: flex; gap: 14px; align-items: center; }
+.testimonio header div { display: grid; gap: 2px; min-width: 0; }
+.testimonio header .tenue { font-size: .85rem; line-height: 1.35; }
+.testimonio blockquote { margin: 0; font-size: 1.02rem; line-height: 1.6; color: var(--texto); }
+.avatar-foto { border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 3px rgba(255,255,255,.7); }
+.vacio-testimonios { justify-items: start; }
+@media (max-width: 767px) {
+  .testimonios-pista { grid-auto-columns: 86%; }
+  .testimonios-cabeza { text-align: left; }
+}
+
+/* ---------- Google ---------- */
+.google { display: grid; gap: 10px; justify-items: center; }
+.google-boton { width: 100%; display: flex; justify-content: center; min-height: 44px; }
+.google .tenue { text-align: center; }
+.separador { width: 100%; display: flex; align-items: center; gap: 12px; color: var(--tenue); font-size: .8rem; }
+.separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: rgba(118,118,128,.2); }
+.avatar-grande { display: inline-flex; border-radius: 50%; box-shadow: 0 0 0 5px rgba(255,255,255,.7), 0 14px 30px -14px var(--acento); }
+.avatar-grande .avatar { font-weight: 800; }
+html[data-tema="oscuro"] .avatar-grande { box-shadow: 0 0 0 5px rgba(255,255,255,.08); }
+
+/* ---------- Seguridad de la cuenta ---------- */
+textarea {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--borde-medio); border-radius: 12px; resize: vertical;
+  font: 400 1rem/1.5 var(--fuente); color: var(--texto); background: rgba(255,255,255,.82);
+}
+textarea:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-suave); }
+html[data-tema="oscuro"] textarea { background: rgba(0,0,0,.22); }
+.verificar { padding: 16px 20px 20px; }
+.verificado { display: flex; align-items: center; gap: 14px; padding: 16px 20px 20px; }
+.verificado > div { flex: 1; display: grid; gap: 2px; }
+.sello-ok { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--acento-suave); color: var(--acento); flex: none; }
+input.codigo { font-size: 1.4rem; letter-spacing: .4em; text-align: center; font-variant-numeric: tabular-nums; max-width: 240px; }
+.fila-icono.alerta { color: var(--error); background: rgba(166,56,44,.1); }
+
+/* ---------- Administracion ---------- */
+.barras-dias { display: flex; align-items: end; gap: 3px; height: 140px; padding-top: 8px; }
+.barras-dias span { flex: 1; border-radius: 4px 4px 2px 2px; background: color-mix(in srgb, var(--acento) 16%, transparent); min-width: 3px; }
+.barras-dias span.con { background: var(--acento); }
+.testimonio-admin { flex-wrap: wrap; align-items: flex-start; }
+.testimonio-texto { white-space: normal !important; font-size: .9rem; color: var(--texto-medio); }
+.testimonio-admin .fila-texto strong { white-space: normal; }
+.boton.peligro { color: var(--error); }
+.admin-movil { display: none; }
+@media (max-width: 767px) {
+  .admin .cuenta-menu { display: none !important; }
+  .admin-movil { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .admin-movil .opcion { flex: none; text-decoration: none; display: inline-flex; align-items: center; }
+}
+
+/* El aro del avatar grande abraza solo al avatar (no al ancho de la cabecera) */
+.avatar-grande { justify-self: start; width: max-content; height: max-content; }
+.hub-perfil .avatar-grande { justify-self: center; }
+@media (max-width: 767px) { .perfil-cabecera .avatar-grande { justify-self: center; } }
+
+/* Aviso de Google sin configurar (solo en desarrollo) */
+.google-falta {
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 44px;
+  border-radius: 999px; border: 1px dashed var(--borde-medio); color: var(--tenue); font-weight: 600; font-size: .9rem;
+}
+
+/* ---------- Pedidos: filtros y miniatura ---------- */
+.filtros-pedidos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.filtros-pedidos .filtro { min-height: 42px; padding: 0 12px; gap: 8px; flex: 0 1 auto; }
+.filtros-pedidos .filtro select { min-height: 40px !important; font-size: .875rem; padding-right: 4px !important; }
+.pedido-cabeza { display: flex; align-items: center; gap: 16px; }
+.pedido-titulo { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.pedido-precio { font-weight: 700; color: var(--acento-tinta); font-variant-numeric: tabular-nums; }
+.miniatura { flex: none; border-radius: 14px; background: linear-gradient(180deg, #F7F3EC, #ECE5D8); border: 1px solid var(--borde); padding: 4px; }
+.miniatura.vacia { display: inline-block; }
+html[data-tema="oscuro"] .miniatura { background: linear-gradient(180deg, #2A2E29, #1E211D); }
+.pedido-bandeja { gap: 14px; }
+@media (max-width: 767px) {
+  .filtros-pedidos .filtro { flex: 1 1 100%; }
+  .pedido-cabeza { align-items: flex-start; }
+  .pedido-cabeza .chip { display: none; }
+}
+
+/* ---------- Mapa de carpinterias (OpenStreetMap / Google) ---------- */
+.mapa-talleres { height: 320px; z-index: 0; }
+.mapa-talleres .leaflet-container, .mapa-talleres.leaflet-container { font-family: var(--fuente); background: #F2EFE9; }
+.marca-taller { background: none; border: 0; }
+.marca-taller span {
+  display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+  background: var(--acento); border: 3px solid #fff; box-shadow: 0 6px 14px -4px rgba(28,28,26,.45);
+}
+.leaflet-popup-content-wrapper { border-radius: 14px; box-shadow: 0 12px 24px -8px rgba(28,28,26,.25); }
+.leaflet-popup-content { margin: 12px 14px; }
+.ficha-mapa { display: grid; gap: 4px; font-family: var(--fuente); min-width: 160px; }
+.ficha-mapa strong { font-size: .95rem; color: #1C1C1A; }
+.ficha-mapa span { font-size: .8rem; color: #737067; }
+.ficha-mapa button {
+  margin-top: 6px; min-height: 34px; border: 0; border-radius: 999px; cursor: pointer;
+  background: color-mix(in srgb, var(--acento) 12%, #fff 88%); color: var(--acento); font: 600 .82rem var(--fuente);
+}
+html[data-tema="oscuro"] .mapa-talleres .leaflet-tile-pane { filter: brightness(.72) contrast(1.1) saturate(.8); }
+@media (max-width: 767px) { .mapa-talleres { height: 260px; } }
+.mapa-talleres::before { display: none; }
+.mapa-talleres { -webkit-backdrop-filter: none; backdrop-filter: none; background: #F2EFE9; }

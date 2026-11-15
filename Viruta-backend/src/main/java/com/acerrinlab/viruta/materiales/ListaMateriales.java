@@ -16,5 +16,7 @@ public record ListaMateriales(
         int tornillos,
         int bisagras,
         String terminacion,
-        double litros) {
+        double litros,
+        /** Vidrio a encargar aparte, en metros cuadrados. */
+        double vidrioM2) {
 }

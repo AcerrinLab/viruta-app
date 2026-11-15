@@ -13,7 +13,9 @@ function exportarGlb(piezas, hex) {
   cajas(piezas).forEach((c, i) => {
     const malla = new THREE.Mesh(
       cajaMadera(c.tam, i),
-      new THREE.MeshStandardMaterial({ map: textura, color: tono('#ffffff', c.rol), roughness: 0.62, metalness: 0 })
+      c.rol === 'VIDRIO'
+        ? new THREE.MeshStandardMaterial({ color: '#DCEBEA', transparent: true, opacity: 0.3, roughness: 0.08, metalness: 0.1 })
+        : new THREE.MeshStandardMaterial({ map: textura, color: tono('#ffffff', c.rol), roughness: 0.62, metalness: 0 })
     );
     malla.position.set(...c.centro);
     grupo.add(malla);
