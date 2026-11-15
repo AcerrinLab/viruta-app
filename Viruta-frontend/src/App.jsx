@@ -149,11 +149,13 @@ export default function App() {
       </div>
       <header className="barra">
         <Link to="/" className="marca" aria-label="Viruta, inicio">
-          <svg viewBox="0 0 32 32" aria-hidden="true">
-            <rect className="fondo-marca" width="32" height="32" rx="9" />
-            <path d="M9 9l7 15 7-15" fill="none" stroke="#E2C8A2" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+          <svg viewBox="0 0 40 40" aria-hidden="true">
+            <rect className="fondo-marca" x="1" y="1" width="38" height="38" rx="10" />
+            <path d="M9 27c6-1 11-5 13-11 1-3 4-5 9-5" fill="none" stroke="#E2C8A2" strokeWidth="2.6" strokeLinecap="round" />
+            <path d="M9 31h22" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" />
+            <path d="M12 21c4-1 7-3 8-7" fill="none" stroke="#D4A373" strokeWidth="2.2" strokeLinecap="round" />
           </svg>
-          <span>Viruta</span>
+          <span>VIRUTA</span>
         </Link>
         <nav>
           {(!sesion || sesion.rol === 'CLIENTE') && <NavLink to="/disenar" className={(e) => 'solo-escritorio ' + activo(e)}>Diseñar</NavLink>}
