@@ -15,6 +15,13 @@ import { medidas, pesos } from '../lib/unidades.js';
 
 /** Secciones de la cuenta segun el rol: icono y nombre, como un menu de ajustes. */
 const SECCIONES = {
+  // Los administradores no son clientes: si usaran las secciones del cliente, la pagina pediria
+  // /api/pedidos y /api/proyectos y el backend respondería 403 (Forbidden).
+  ADMIN: [
+    ['perfil', 'persona', 'Perfil'],
+    ['preferencias', 'ajustes', 'Preferencias'],
+    ['seguridad', 'escudo', 'Seguridad'],
+  ],
   CLIENTE: [
     ['perfil', 'persona', 'Perfil'],
     ['proyectos', 'cubo', 'Mis proyectos'],
@@ -152,6 +159,27 @@ function Seguridad({ sesion, alSalir }) {
 }
 
 /* ---------------- Cliente ---------------- */
+
+/* ---------------- Administracion ---------------- */
+
+function CuentaAdmin({ seccion, sesion, salir }) {
+  return (
+    <>
+      {seccion === 'perfil' && (
+        <>
+          <Cabecera sesion={sesion} subtitulo={sesion.email || 'Administración'} />
+          <Datos titulo="Datos de la cuenta" filas={[
+            ['Nombre completo', sesion.nombre],
+            ['Email', sesion.email],
+            ['Tipo de cuenta', 'Administración'],
+          ]} pie={<Link to="/admin" className="boton claro" style={{ margin: '16px 20px 20px' }}><Icono nombre="grafico" />Ir al panel de administración</Link>} />
+        </>
+      )}
+      {seccion === 'preferencias' && <Preferencias />}
+      {seccion === 'seguridad' && <SeguridadCuenta sesion={sesion} alSalir={salir} />}
+    </>
+  );
+}
 
 function CuentaCliente({ seccion, sesion, salir }) {
   const [pedidos, setPedidos] = useState(null);
@@ -332,6 +360,7 @@ function Accesos({ sesion, plegado }) {
   const [items, setItems] = useState([]);
   const taller = sesion.rol === 'CARPINTERIA';
   useEffect(() => {
+    if (sesion.rol === 'ADMIN') return;
     const ruta = taller ? '/api/carpinteria/pedidos' : '/api/proyectos';
     api(ruta).then((lista) => {
       const orden = [...(lista || [])].sort((a, b) => String(b.actualizado || b.creado || '').localeCompare(String(a.actualizado || a.creado || '')));
@@ -369,11 +398,11 @@ function Hub({ sesion, secciones, salir }) {
       <div className="hub-perfil">
         <span className="avatar-grande"><Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={88} /></span>
         <h1>{sesion.nombre}</h1>
-        <p className="tenue">{sesion.email || (taller ? 'Carpintería' : 'Cliente')}</p>
+        <p className="tenue">{sesion.email || (taller ? 'Carpintería' : sesion.rol === 'ADMIN' ? 'Administración' : 'Cliente')}</p>
       </div>
-      <Link to={taller ? '/panel' : '/disenar'} className="hub-destacado">
+      <Link to={taller ? '/panel' : sesion.rol === 'ADMIN' ? '/admin' : '/disenar'} className="hub-destacado">
         <Icono nombre={taller ? 'bandeja' : 'cubo'} tam={20} />
-        <span>{taller ? 'Abrir la bandeja de pedidos' : 'Diseñar un mueble nuevo'}</span>
+        <span>{taller ? 'Abrir la bandeja de pedidos' : sesion.rol === 'ADMIN' ? 'Abrir el panel de administración' : 'Diseñar un mueble nuevo'}</span>
         <svg className="hub-arte" viewBox="0 0 120 90" aria-hidden="true">
           <rect x="30" y="14" width="8" height="70" rx="2" fill="#D4A373" />
           <rect x="90" y="14" width="8" height="70" rx="2" fill="#D4A373" />
@@ -442,7 +471,7 @@ export default function Cuenta() {
         <Accesos sesion={sesion} plegado={plegado === true} />
         <Link to="/cuenta/perfil" className="tarjeta-usuario" title={sesion.nombre}>
           <Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={32} />
-          <span className="tarjeta-usuario-texto"><strong>{sesion.nombre}</strong><span>{taller ? 'Carpintería' : 'Cliente'}</span></span>
+          <span className="tarjeta-usuario-texto"><strong>{sesion.nombre}</strong><span>{taller ? 'Carpintería' : sesion.rol === 'ADMIN' ? 'Administración' : 'Cliente'}</span></span>
         </Link>
       </aside>
       <section className="cuenta-contenido">
@@ -453,7 +482,9 @@ export default function Cuenta() {
         </p>
         {taller
           ? <CuentaTaller seccion={seccion} sesion={sesion} salir={salir} />
-          : <CuentaCliente seccion={seccion} sesion={sesion} salir={salir} />}
+          : sesion.rol === 'ADMIN'
+            ? <CuentaAdmin seccion={seccion} sesion={sesion} salir={salir} />
+            : <CuentaCliente seccion={seccion} sesion={sesion} salir={salir} />}
       </section>
     </main>
   );

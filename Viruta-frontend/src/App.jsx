@@ -65,7 +65,9 @@ function Usuario({ sesion, alSalir }) {
           <div className="menu-grupo">
             {(taller
               ? [['resumen', 'grafico', 'Resumen'], ['perfil', 'martillo', 'Mi taller'], ['pedidos', 'bandeja', 'Pedidos']]
-              : [['perfil', 'persona', 'Mi perfil'], ['proyectos', 'cubo', 'Mis proyectos'], ['pedidos', 'bandeja', 'Mis pedidos']]
+              : sesion.rol === 'ADMIN'
+                ? [['perfil', 'persona', 'Mi perfil'], ['seguridad', 'escudo', 'Seguridad']]
+                : [['perfil', 'persona', 'Mi perfil'], ['proyectos', 'cubo', 'Mis proyectos'], ['pedidos', 'bandeja', 'Mis pedidos']]
             ).map(([id, icono, texto]) => (
               <Link key={id} className="item" role="menuitem" to={'/cuenta/' + id} onClick={cerrar}>
                 <Icono nombre={icono} tam={16} />{texto}
