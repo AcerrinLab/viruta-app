@@ -102,8 +102,9 @@ class ControladorUsuarios {
     }
 
     private static ServicioUsuarios.Origen origen(HttpServletRequest peticion) {
-        String reenviada = peticion.getHeader("X-Forwarded-For");
-        String ip = reenviada != null && !reenviada.isBlank() ? reenviada.split(",")[0].trim() : peticion.getRemoteAddr();
-        return new ServicioUsuarios.Origen(ip, peticion.getHeader("User-Agent"));
+        // No se lee X-Forwarded-For a mano: el cliente puede escribir cualquier valor ahi y saltear el
+        // limite de intentos. Con server.forward-headers-strategy=native, Tomcat toma la IP que agrega
+        // el proxy de la plataforma (Railway) y la deja en getRemoteAddr().
+        return new ServicioUsuarios.Origen(peticion.getRemoteAddr(), peticion.getHeader("User-Agent"));
     }
 }

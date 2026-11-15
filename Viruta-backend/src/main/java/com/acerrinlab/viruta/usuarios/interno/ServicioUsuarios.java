@@ -155,6 +155,11 @@ class ServicioUsuarios implements UsuariosApi, CommandLineRunner {
             String nombre = p.nombre() == null || p.nombre().isBlank() ? correo.substring(0, correo.indexOf('@')) : p.nombre();
             u = crear(nombre.length() > 80 ? nombre.substring(0, 80) : nombre, correo, null, esAdmin ? Rol.ADMIN : rol);
         }
+        if (u.googleId == null && u.rol != Rol.ADMIN && u.clave != null && !u.clave.isEmpty()) {
+            // Primera vez que esta cuenta entra con Google. La clave se eligio sin verificar el email,
+            // asi que podria haberla puesto otra persona antes que el dueno: desde ahora entra con Google.
+            u.clave = "";
+        }
         u.googleId = p.id();
         if (p.foto() != null && !p.foto().isBlank()) {
             u.fotoUrl = p.foto();
@@ -367,6 +372,9 @@ class ServicioUsuarios implements UsuariosApi, CommandLineRunner {
         } else if (existente.get().rol != Rol.ADMIN) {
             Usuario u = existente.get();
             u.rol = Rol.ADMIN;
+            // Nadie verifico que quien registro esa cuenta sea el dueno del email: su clave podria ser de
+            // otra persona. Se reemplaza por la configurada, o se borra y el admin entra solo con Google.
+            u.clave = clave.isEmpty() ? "" : codificador.encode(clave);
             usuarios.save(u);
             log.info("Usuario ascendido a administrador: {}", correo);
         }

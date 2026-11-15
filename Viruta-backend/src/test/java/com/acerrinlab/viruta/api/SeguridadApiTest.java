@@ -88,6 +88,17 @@ class SeguridadApiTest extends PruebaApi {
     }
 
     @Test
+    void unaCabeceraXForwardedForInventadaNoSaltaElLimiteDeIntentos() throws Exception {
+        String json = "{\"email\":\"" + emailUnico("ipfalsa") + "\",\"clave\":\"no-es-la-clave\"}";
+        for (int i = 0; i < 5; i++) {
+            enviar(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/auth/ingreso")
+                    .header("X-Forwarded-For", "203.0.113." + i), null, json).andExpect(status().isUnauthorized());
+        }
+        enviar(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/auth/ingreso")
+                .header("X-Forwarded-For", "198.51.100.77"), null, json).andExpect(status().isTooManyRequests());
+    }
+
+    @Test
     void r17_conocerElNumeroDeUnPedidoAjenoNoAlcanzaParaVerlo() throws Exception {
         String carpinteria = registrar("CARPINTERIA");
         long taller = crearCarpinteria(carpinteria, "Taller R17 " + System.nanoTime(), "[\"MELAMINA\"]");

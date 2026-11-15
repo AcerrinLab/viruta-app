@@ -67,7 +67,7 @@ public class MigracionEnums implements ApplicationRunner {
             DatabaseMetaData meta = c.getMetaData();
             boolean mysql = meta.getDatabaseProductName().toLowerCase(Locale.ROOT).contains("mysql");
             for (String[] col : COLUMNAS) {
-                Columna actual = buscar(meta, col[0], col[1]);
+                Columna actual = buscar(meta, c.getCatalog(), col[0], col[1]);
                 if (actual == null || !actual.tipo().toUpperCase(Locale.ROOT).contains("ENUM")) {
                     continue;
                 }
@@ -89,11 +89,14 @@ public class MigracionEnums implements ApplicationRunner {
     private record Columna(String tipo, boolean nula) {
     }
 
-    /** Busca la columna sin importar mayusculas (H2 guarda en mayusculas, MySQL como se creo). */
-    private static Columna buscar(DatabaseMetaData meta, String tabla, String columna) throws SQLException {
+    /**
+     * Busca la columna sin importar mayusculas (H2 guarda en mayusculas, MySQL como se creo), solo en la
+     * base actual: si el servidor tiene otra base con tablas del mismo nombre, no la toca.
+     */
+    private static Columna buscar(DatabaseMetaData meta, String base, String tabla, String columna) throws SQLException {
         for (String t : List.of(tabla, tabla.toUpperCase(Locale.ROOT))) {
             for (String n : List.of(columna, columna.toUpperCase(Locale.ROOT))) {
-                try (ResultSet rs = meta.getColumns(null, null, t, n)) {
+                try (ResultSet rs = meta.getColumns(base, null, t, n)) {
                     if (rs.next()) {
                         return new Columna(rs.getString("TYPE_NAME"), rs.getInt("NULLABLE") != DatabaseMetaData.columnNoNulls);
                     }

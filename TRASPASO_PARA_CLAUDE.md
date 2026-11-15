@@ -39,3 +39,9 @@
 3. [x] GUIA_DESPLIEGUE.md: frontend en Vercel; backend + MySQL en un servicio con Docker (ej. Render/Railway); variables; Mercado Pago (webhook a /api/pagos/webhook); n8n; checklist de seguridad (sin claves en el repo).
 4. [ ] Copiar todo a la carpeta del usuario (ver restricciones) o mandar zip.
 5. [ ] Avisar al usuario: qué está verificado y qué no (integración backend sin ejecutar), y pedirle que corra `mvn test` en IntelliJ.
+
+## Revisión de la rama de José (15/11)
+- Rama de trabajo: fix/002-revision-seguridad (sale de feature/002-comunidad-relicario-y-admin, incluye el logo de la wishlist).
+- Corregido: IP del cliente ya no se lee de X-Forwarded-For a mano (server.forward-headers-strategy=native); al ascender a admin o vincular Google se descarta la clave puesta sin verificar el email; MigracionEnums busca solo en la base actual.
+- Pruebas nuevas: SeguridadApiTest (cabecera falsa), CuentasApiTest (vincular Google), AdministradoresTest (Mockito).
+- Pendiente sugerido: dividir el bundle del frontend (1,36 MB), límite de envíos de códigos por número, contar pedidos del panel admin en la base.
