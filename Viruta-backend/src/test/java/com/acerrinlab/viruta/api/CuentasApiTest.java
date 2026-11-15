@@ -68,6 +68,19 @@ class CuentasApiTest extends PruebaApi {
     }
 
     @Test
+    void alVincularGoogleLaClaveQueSePusoAntesDejaDeServir() throws Exception {
+        // Alguien registra el email de otra persona con una clave propia; despues el dueno entra con Google.
+        String email = emailUnico("preregistro");
+        publicar("/api/auth/registro", null, """
+                {"nombre":"Otra persona","email":"%s","clave":"clave-del-intruso","rol":"CLIENTE","consentimiento":true}
+                """.formatted(email)).andExpect(status().isCreated());
+        String acceso = google("google:d-" + System.nanoTime() + ":" + email + ":Duena Real", null);
+        obtener("/api/usuarios/yo", JsonPath.read(acceso, "$.token")).andExpect(jsonPath("$.conClave").value(false));
+        publicar("/api/auth/ingreso", null, "{\"email\":\"" + email + "\",\"clave\":\"clave-del-intruso\"}")
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void googleRechazaCredencialesFalsasYEmailsSinVerificar() throws Exception {
         publicar("/api/auth/google", null, "{\"credencial\":\"inventada\",\"rol\":\"CLIENTE\",\"consentimiento\":true}")
                 .andExpect(status().isUnauthorized());
