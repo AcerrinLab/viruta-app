@@ -7,6 +7,9 @@ import com.acerrinlab.viruta.carpinterias.DatosCarpinteria;
 import com.acerrinlab.viruta.carpinterias.Zona;
 import com.acerrinlab.viruta.materiales.Material;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -32,12 +35,14 @@ class Carpinteria {
     Long usuarioId;
     String nombre;
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     Zona zona;
     String whatsapp;
     String direccion;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "carpinteria_materiales", joinColumns = @JoinColumn(name = "carpinteria_id"))
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "material")
     Set<Material> materiales = EnumSet.noneOf(Material.class);
 

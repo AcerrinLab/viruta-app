@@ -6,6 +6,9 @@ import com.acerrinlab.viruta.usuarios.Rol;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,6 +31,7 @@ class Usuario {
     /** Contrasena cifrada con BCrypt. Nunca se guarda en texto plano. */
     String clave;
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     Rol rol;
     boolean activo;
     /** Consentimiento explicito para tratar sus datos (Ley 25.326). */
