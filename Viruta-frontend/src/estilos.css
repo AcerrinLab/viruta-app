@@ -1086,3 +1086,25 @@ html[data-tema="oscuro"] .miniatura { background: linear-gradient(180deg, #2A2E2
   .pedido-cabeza { align-items: flex-start; }
   .pedido-cabeza .chip { display: none; }
 }
+
+/* ---------- Mapa de carpinterias (OpenStreetMap / Google) ---------- */
+.mapa-talleres { height: 320px; z-index: 0; }
+.mapa-talleres .leaflet-container, .mapa-talleres.leaflet-container { font-family: var(--fuente); background: #F2EFE9; }
+.marca-taller { background: none; border: 0; }
+.marca-taller span {
+  display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+  background: var(--acento); border: 3px solid #fff; box-shadow: 0 6px 14px -4px rgba(28,28,26,.45);
+}
+.leaflet-popup-content-wrapper { border-radius: 14px; box-shadow: 0 12px 24px -8px rgba(28,28,26,.25); }
+.leaflet-popup-content { margin: 12px 14px; }
+.ficha-mapa { display: grid; gap: 4px; font-family: var(--fuente); min-width: 160px; }
+.ficha-mapa strong { font-size: .95rem; color: #1C1C1A; }
+.ficha-mapa span { font-size: .8rem; color: #737067; }
+.ficha-mapa button {
+  margin-top: 6px; min-height: 34px; border: 0; border-radius: 999px; cursor: pointer;
+  background: color-mix(in srgb, var(--acento) 12%, #fff 88%); color: var(--acento); font: 600 .82rem var(--fuente);
+}
+html[data-tema="oscuro"] .mapa-talleres .leaflet-tile-pane { filter: brightness(.72) contrast(1.1) saturate(.8); }
+@media (max-width: 767px) { .mapa-talleres { height: 260px; } }
+.mapa-talleres::before { display: none; }
+.mapa-talleres { -webkit-backdrop-filter: none; backdrop-filter: none; background: #F2EFE9; }
