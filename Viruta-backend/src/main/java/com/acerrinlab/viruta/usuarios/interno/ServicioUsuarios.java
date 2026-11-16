@@ -377,6 +377,12 @@ class ServicioUsuarios implements UsuariosApi, CommandLineRunner {
             u.clave = clave.isEmpty() ? "" : codificador.encode(clave);
             usuarios.save(u);
             log.info("Usuario ascendido a administrador: {}", correo);
+        } else if (!clave.isEmpty() && !codificador.matches(clave, existente.get().clave == null ? "" : existente.get().clave)) {
+            // La clave configurada es la que manda: si la cambian en las variables, se actualiza al reiniciar.
+            Usuario u = existente.get();
+            u.clave = codificador.encode(clave);
+            usuarios.save(u);
+            log.info("Clave de administrador actualizada desde la configuracion: {}", correo);
         }
     }
 
