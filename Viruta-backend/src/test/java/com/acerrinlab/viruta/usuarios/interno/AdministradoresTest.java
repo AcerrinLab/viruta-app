@@ -65,4 +65,23 @@ class AdministradoresTest {
         assertEquals(Rol.ADMIN, u.rol);
         assertEquals("", u.clave);
     }
+
+    @Test
+    void siCambianLaClaveConfiguradaElAdminExistenteLaToma() {
+        Usuario u = cuentaPrevia("admin@viruta.test");
+        u.rol = Rol.ADMIN;
+        u.clave = codificador.encode("clave-vieja-123");
+        servicio("Admin|admin@viruta.test|clave-nueva-456").run();
+        assertTrue(codificador.matches("clave-nueva-456", u.clave));
+        assertFalse(codificador.matches("clave-vieja-123", u.clave));
+    }
+
+    @Test
+    void unAdminSinClaveConfiguradaConservaLaSuya() {
+        Usuario u = cuentaPrevia("google@viruta.test");
+        u.rol = Rol.ADMIN;
+        u.clave = codificador.encode("clave-propia-789");
+        servicio("Solo Google|google@viruta.test").run();
+        assertTrue(codificador.matches("clave-propia-789", u.clave));
+    }
 }
