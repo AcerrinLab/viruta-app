@@ -166,7 +166,7 @@ export default function Admin() {
           ))}
         </nav>
         <div className="tarjeta-usuario">
-          <Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={32} />
+          <Avatar nombre={sesion.nombre} semilla={sesion.email} foto={sesion.fotoUrl} tam={32} />
           <span className="tarjeta-usuario-texto"><strong>{sesion.nombre}</strong><span>Administración</span></span>
         </div>
       </aside>
@@ -212,7 +212,7 @@ export default function Admin() {
               <div className="lista-cabeza"><h3>Últimos registros</h3></div>
               {usuarios.ultimos.map((u) => (
                 <div key={u.id} className="fila-lista">
-                  <Avatar nombre={u.nombre} foto={u.fotoUrl} tam={38} />
+                  <Avatar nombre={u.nombre} semilla={u.email} foto={u.fotoUrl} tam={38} />
                   <span className="fila-texto"><strong>{u.nombre}</strong><span className="tenue">{u.email} · {fecha(u.creado)}</span></span>
                   {u.conGoogle && <span className="chip">Google</span>}
                   {u.telefonoVerificado && <span className="chip bien">Teléfono</span>}

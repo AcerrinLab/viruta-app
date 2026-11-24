@@ -5,7 +5,7 @@ import { Chip, PasosPedido } from '../componentes/Comunes.jsx';
 import { MATERIALES } from '../lib/diseno.js';
 import { medidas, pesos } from '../lib/unidades.js';
 import { Icono } from '../componentes/Iconos.jsx';
-import Miniatura from '../componentes/Miniatura.jsx';
+import Miniatura, { piezasDe } from '../componentes/Miniatura.jsx';
 import { ESTADOS } from '../lib/estados.js';
 
 /** Pantalla del cliente: sus pedidos con el estado actualizado y sus proyectos guardados (RF-05, RF-18, RF-19). */
@@ -106,7 +106,7 @@ export default function MisPedidos() {
       {visibles.map((p) => (
         <article key={p.id} className="tarjeta pila">
           <div className="pedido-cabeza">
-            <Miniatura piezas={p.calculo?.piezas} color={p.diseno.color} />
+            <Miniatura piezas={piezasDe(p)} color={p.diseno.color} />
             <div className="pedido-titulo">
               <h3>{p.diseno.nombre}</h3>
               <p className="tenue">{p.carpinteria?.nombre} · {medidas(p.diseno)}</p>

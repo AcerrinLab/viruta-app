@@ -229,6 +229,18 @@ class PedidosApiTest extends PruebaApi {
     }
 
     @Test
+    void lasListasTraenLasPiezasParaDibujarLaMiniaturaSinElCalculoCompleto() throws Exception {
+        nuevoPedido();
+        obtener("/api/carpinteria/pedidos", carpinteria)
+                .andExpect(jsonPath("$[0].piezas", hasSize(5)))
+                .andExpect(jsonPath("$[0].piezas[0].dx").isNumber())
+                .andExpect(jsonPath("$[0].calculo").value(nullValue()));
+        obtener("/api/pedidos", cliente)
+                .andExpect(jsonPath("$[0].piezas", hasSize(5)))
+                .andExpect(jsonPath("$[0].calculo").value(nullValue()));
+    }
+
+    @Test
     void r13_enLaBandejaLosPedidosNuevosVanPrimeroYSinLeer() throws Exception {
         long primero = nuevoPedido();
         obtener("/api/carpinteria/pedidos/" + primero, carpinteria).andExpect(jsonPath("$.leido").value(true));

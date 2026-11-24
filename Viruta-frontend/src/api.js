@@ -1,5 +1,7 @@
 // Cliente de la API. El token se guarda en el navegador; si el almacenamiento falla, la sesion vive en memoria.
 
+import { pedir } from './lib/red.js';
+
 const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '');
 const CLAVE = 'viruta.sesion';
 let memoria = null;
@@ -31,11 +33,11 @@ export async function api(ruta, { metodo = 'GET', cuerpo } = {}) {
   if (cuerpo !== undefined) cabeceras['Content-Type'] = 'application/json';
   let respuesta;
   try {
-    respuesta = await fetch(BASE + ruta, {
+    respuesta = await pedir(BASE + ruta, {
       method: metodo,
       headers: cabeceras,
       body: cuerpo !== undefined ? JSON.stringify(cuerpo) : undefined,
-    });
+    }, { alCambiarEstado: avisarEstado });
   } catch {
     throw new Error('No pudimos conectar. Revisá tu conexión.');
   }
@@ -76,5 +78,14 @@ export function guardarBorrador(borrador) {
     else localStorage.removeItem(BORRADOR);
   } catch {
     // El borrador es una comodidad: si no se puede guardar, se sigue igual.
+  }
+}
+
+/** Avisa a la pantalla si el servidor esta tardando (por ejemplo, despertando en un plan gratis). */
+let pendientesLentos = 0;
+function avisarEstado(estado) {
+  pendientesLentos += estado === 'despertando' ? 1 : -1;
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('viruta-servidor', { detail: pendientesLentos > 0 ? 'despertando' : 'listo' }));
   }
 }

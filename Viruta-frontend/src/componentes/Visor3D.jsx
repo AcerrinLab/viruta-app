@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { createPortal } from 'react-dom';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { cajas, envolvente, tono } from '../lib/modelo.js';
@@ -9,20 +10,25 @@ import { Icono } from './Iconos.jsx';
 
 /** Controles para girar y acercar. La camara no cambia ninguna medida del mueble. */
 function Camara({ tam }) {
-  const { camera, gl } = useThree();
+  const { camera, gl, size } = useThree();
   const mayor = Math.max(tam[0], tam[1], tam[2], 0.3);
+  // En un visor angosto (celular parado, pantalla completa vertical) la camara se aleja lo necesario
+  // para que entre el ancho del mueble. Con visores anchos queda igual que siempre.
+  const aspecto = size.width / Math.max(size.height, 1);
+  const horizontal = 2 * Math.atan(Math.tan(((camera.fov || 35) * Math.PI) / 360) * aspecto);
+  const lejos = Math.max(1, (mayor * 0.8) / Math.tan(horizontal / 2) / (mayor * 2.26));
 
   useEffect(() => {
     const controles = new OrbitControls(camera, gl.domElement);
     controles.enablePan = false;
     controles.target.set(0, tam[1] / 2, 0);
     controles.minDistance = mayor * 0.8;
-    controles.maxDistance = mayor * 5;
+    controles.maxDistance = mayor * 5 * lejos;
     controles.maxPolarAngle = Math.PI / 2;
-    camera.position.set(mayor * 1.1, tam[1] / 2 + mayor * 0.55, mayor * 1.9);
+    camera.position.set(mayor * 1.1 * lejos, tam[1] / 2 + mayor * 0.55 * lejos, mayor * 1.9 * lejos);
     controles.update();
     return () => controles.dispose();
-  }, [camera, gl, mayor, tam[1]]);
+  }, [camera, gl, mayor, tam[1], lejos]);
   return null;
 }
 
@@ -76,8 +82,52 @@ function texturaSombra() {
 
 const cm = (m) => Math.round(m * 100);
 
-/** Visor 3D del mueble (RF-01, RF-28). Dibuja exactamente las piezas que devuelve el backend. */
-export default function Visor3D({ piezas, color = 'NATURAL', alto = 320 }) {
+/**
+ * Visor 3D del mueble (RF-01, RF-28). Dibuja exactamente las piezas que devuelve el backend.
+ * Con `ampliable`, muestra botones para agrandar el visor (avisa con `alAmpliar`) y para verlo en
+ * pantalla completa. Si el navegador no deja usar la pantalla completa real (iPhone, vistas embebidas),
+ * el visor cubre la ventana igual, montado sobre el body.
+ */
+export default function Visor3D({ piezas, color = 'NATURAL', alto = 320, ampliable = false, alAmpliar }) {
+  const escenario = useRef(null);
+  const [amplio, setAmplio] = useState(false);
+  // null, 'nativo' (API de pantalla completa) o 'ventana' (cubre la ventana con CSS).
+  const [modo, setModo] = useState(null);
+  const completa = modo !== null;
+
+  useEffect(() => {
+    if (!ampliable) return undefined;
+    const cambio = () => setModo((m) => (document.fullscreenElement ? 'nativo' : m === 'nativo' ? null : m));
+    document.addEventListener('fullscreenchange', cambio);
+    return () => document.removeEventListener('fullscreenchange', cambio);
+  }, [ampliable]);
+
+  useEffect(() => {
+    if (modo !== 'ventana') return undefined;
+    const tecla = (e) => { if (e.key === 'Escape') setModo(null); };
+    const desborde = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', tecla);
+    return () => { document.removeEventListener('keydown', tecla); document.body.style.overflow = desborde; };
+  }, [modo]);
+
+  const alternarAmplio = () => {
+    const nuevo = !amplio;
+    setAmplio(nuevo);
+    alAmpliar?.(nuevo);
+  };
+  const alternarCompleta = () => {
+    if (modo === 'nativo') { document.exitFullscreen?.(); return; }
+    if (modo === 'ventana') { setModo(null); return; }
+    const nodo = escenario.current;
+    if (document.fullscreenEnabled && nodo?.requestFullscreen) {
+      nodo.requestFullscreen().catch(() => setModo('ventana'));
+    } else {
+      setModo('ventana');
+    }
+  };
+  const altura = completa ? '100%' : amplio ? 'min(78vh, 860px)' : alto;
+
   const lista = useMemo(() => cajas(piezas), [piezas]);
   const tam = useMemo(() => envolvente(piezas), [piezas]);
   const hex = (COLORES[color] || COLORES.NATURAL).hex;
@@ -89,8 +139,24 @@ export default function Visor3D({ piezas, color = 'NATURAL', alto = 320 }) {
   useEffect(() => () => piso.dispose(), [piso]);
   const sombra = texturaSombra();
 
-  return (
-    <div className="escenario">
+  const contenido = (
+    <div className={'escenario' + (completa ? ' completa' : '') + (modo === 'ventana' ? ' ventana' : '')} ref={escenario}
+      role={modo === 'ventana' ? 'dialog' : undefined} aria-modal={modo === 'ventana' ? true : undefined}
+      aria-label={modo === 'ventana' ? 'Vista 3D en pantalla completa' : undefined}>
+      {ampliable && (
+        <div className="visor-acciones">
+          {!completa && (
+            <button type="button" className="visor-boton" onClick={alternarAmplio} aria-pressed={amplio}
+              title={amplio ? 'Achicar el visor' : 'Agrandar el visor'}>
+              <Icono nombre={amplio ? 'achicar' : 'ampliar'} tam={16} /><span>{amplio ? 'Achicar' : 'Agrandar'}</span>
+            </button>
+          )}
+          <button type="button" className="visor-boton" onClick={alternarCompleta} aria-pressed={completa}
+            title={completa ? 'Salir de pantalla completa' : 'Ver en pantalla completa'}>
+            <Icono nombre={completa ? 'cerrar' : 'pantalla'} tam={16} /><span>{completa ? 'Salir' : 'Pantalla completa'}</span>
+          </button>
+        </div>
+      )}
       {tam[0] > 0 && (
         <div className="cotas" aria-label="Medidas generales">
           <span className="cota">Ancho <b>{cm(tam[0])}</b></span>
@@ -99,7 +165,7 @@ export default function Visor3D({ piezas, color = 'NATURAL', alto = 320 }) {
         </div>
       )}
       <span className="pista" aria-hidden="true"><Icono nombre="girar" tam={14} />Arrastrá para girar</span>
-    <div className="visor" style={{ height: alto }} aria-label="Vista 3D del mueble. Arrastrá para girarlo.">
+    <div className="visor" style={{ height: altura }} aria-label="Vista 3D del mueble. Arrastrá para girarlo.">
       <Canvas camera={{ fov: 35, near: 0.05, far: 50 }} dpr={[1, 2]} gl={{ alpha: true, antialias: true }}>
         <hemisphereLight args={['#fffaf0', '#cdbfa8', 1.1]} />
         <directionalLight position={[3, 5, 4]} intensity={1.9} color="#fff4e2" />
@@ -126,4 +192,10 @@ export default function Visor3D({ piezas, color = 'NATURAL', alto = 320 }) {
     </div>
     </div>
   );
+
+  if (modo === 'ventana') {
+    // Lugar reservado para que la pagina no salte mientras el visor cubre la ventana.
+    return <><div className="visor-lugar" style={{ height: amplio ? 'min(78vh, 860px)' : alto }} />{createPortal(contenido, document.body)}</>;
+  }
+  return contenido;
 }

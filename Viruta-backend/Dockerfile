@@ -13,4 +13,11 @@ RUN useradd --system --uid 1001 viruta
 COPY --from=compilacion /app/target/viruta-backend-*.jar app.jar
 USER viruta
 EXPOSE 8080
+# Ajustes para servidores chicos (planes gratis, 512 MB o menos):
+# - MaxRAMPercentage: Java usa hasta el 75% de la memoria del contenedor en lugar de calcular mal y morir por falta de memoria.
+# - UseSerialGC: el recolector mas liviano, ideal con 1 CPU.
+# (Se probo TieredStopAtLevel=1 para arrancar mas rapido: en las mediciones no mejoro, asi que no se usa.)
+# - ExitOnOutOfMemoryError: si se queda sin memoria, se reinicia limpio en vez de quedar colgado.
+# Se pueden cambiar sin reconstruir la imagen con la variable JAVA_TOOL_OPTIONS en la plataforma.
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
 ENTRYPOINT ["java", "-jar", "app.jar"]

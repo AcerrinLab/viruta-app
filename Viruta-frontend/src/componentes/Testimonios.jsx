@@ -3,21 +3,30 @@ import { Link } from 'react-router-dom';
 import { api } from '../api.js';
 import { useSesion } from '../App.jsx';
 import { Icono } from './Iconos.jsx';
+import { Blobatar } from '@blobatar/react';
+import 'blobatar/motion.css';
 
 // Testimonios de quienes probaron la version de testing. Solo se muestran los aprobados por un
 // administrador. Si la persona entro con Google, se ve su foto de perfil.
 
-function iniciales(nombre = '') {
-  const partes = nombre.trim().split(/\s+/).filter(Boolean);
-  return ((partes[0]?.[0] || '') + (partes[1]?.[0] || '')).toUpperCase() || 'V';
-}
-
-export function Avatar({ nombre, foto, tam = 56 }) {
+/**
+ * Avatar de la persona: su foto (Google) si tiene; si no, un blobatar unico generado a partir de
+ * su email o su nombre (https://blobatar.dev). Siempre sale el mismo para la misma persona.
+ * Los grandes (perfil) se animan al pasar el mouse.
+ */
+export function Avatar({ nombre, foto, semilla, tam = 56 }) {
   const [rota, setRota] = useState(false);
   if (foto && !rota) {
     return <img className="avatar-foto" src={foto} alt="" width={tam} height={tam} referrerPolicy="no-referrer" onError={() => setRota(true)} />;
   }
-  return <span className="avatar" style={{ width: tam, height: tam, fontSize: tam * 0.36 }} aria-hidden="true">{iniciales(nombre)}</span>;
+  const clave = (semilla || nombre || 'viruta').trim().toLowerCase();
+  return (
+    <span className="avatar-blob" style={{ width: tam, height: tam }} title={nombre || undefined}>
+      {tam >= 72
+        ? <Blobatar name={clave} size={tam} animate="hover" aria-hidden="true" />
+        : <Blobatar name={clave} size={tam} alt="" aria-hidden="true" />}
+    </span>
+  );
 }
 
 export default function Testimonios() {

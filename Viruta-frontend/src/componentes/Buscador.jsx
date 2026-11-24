@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api.js';
 import { Icono } from './Iconos.jsx';
@@ -86,7 +87,9 @@ export default function Buscador({ sesion }) {
       <button className="buscar-boton" onClick={() => setAbierto(true)} aria-label="Buscar">
         <Icono nombre="lupa" tam={18} /><span className="buscar-texto">Buscar</span><kbd>Ctrl K</kbd>
       </button>
-      {abierto && (
+      {/* Se dibuja en <body>: dentro de la barra, su desenfoque (backdrop-filter) encerraba el fondo
+          oscuro en la franja de la barra y el resto de la pagina quedaba sin cubrir. */}
+      {abierto && createPortal((
         <div className="velo buscador-velo" onPointerDown={(e) => e.target === e.currentTarget && setAbierto(false)}>
           <div className="buscador" role="dialog" aria-modal="true" aria-label="Buscar">
             <div className="buscador-campo">
@@ -114,7 +117,7 @@ export default function Buscador({ sesion }) {
             </div>
           </div>
         </div>
-      )}
+), document.body)}
     </>
   );
 }

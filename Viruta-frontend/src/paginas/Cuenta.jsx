@@ -88,7 +88,7 @@ function Cabecera({ sesion, subtitulo, verificado }) {
   return (
     <header className="perfil-cabecera">
       <div className="perfil-trama" aria-hidden="true" />
-      <span className="avatar-grande"><Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={96} /></span>
+      <span className="avatar-grande"><Avatar nombre={sesion.nombre} semilla={sesion.email} foto={sesion.fotoUrl} tam={96} /></span>
       <div>
         <h1>
           {sesion.nombre}
@@ -396,7 +396,7 @@ function Hub({ sesion, secciones, salir }) {
   return (
     <main className="hub">
       <div className="hub-perfil">
-        <span className="avatar-grande"><Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={88} /></span>
+        <span className="avatar-grande"><Avatar nombre={sesion.nombre} semilla={sesion.email} foto={sesion.fotoUrl} tam={88} /></span>
         <h1>{sesion.nombre}</h1>
         <p className="tenue">{sesion.email || (taller ? 'Carpintería' : sesion.rol === 'ADMIN' ? 'Administración' : 'Cliente')}</p>
       </div>
@@ -470,7 +470,7 @@ export default function Cuenta() {
         </nav>
         <Accesos sesion={sesion} plegado={plegado === true} />
         <Link to="/cuenta/perfil" className="tarjeta-usuario" title={sesion.nombre}>
-          <Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={32} />
+          <Avatar nombre={sesion.nombre} semilla={sesion.email} foto={sesion.fotoUrl} tam={32} />
           <span className="tarjeta-usuario-texto"><strong>{sesion.nombre}</strong><span>{taller ? 'Carpintería' : sesion.rol === 'ADMIN' ? 'Administración' : 'Cliente'}</span></span>
         </Link>
       </aside>

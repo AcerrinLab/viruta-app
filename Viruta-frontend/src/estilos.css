@@ -1108,3 +1108,113 @@ html[data-tema="oscuro"] .mapa-talleres .leaflet-tile-pane { filter: brightness(
 @media (max-width: 767px) { .mapa-talleres { height: 260px; } }
 .mapa-talleres::before { display: none; }
 .mapa-talleres { -webkit-backdrop-filter: none; backdrop-filter: none; background: #F2EFE9; }
+
+/* ---------- Avatar generado (blobatar) para quien no tiene foto ---------- */
+.avatar-blob { display: inline-grid; place-items: center; flex: none; border-radius: 50%; overflow: hidden; background: var(--suave); }
+.avatar-blob > img, .avatar-blob > svg { width: 100%; height: 100%; display: block; }
+
+/* ---------- Rendimiento (feature/004, RNF-04 y RNF-05) ---------- */
+/* Esqueleto mientras llega una pantalla que se descarga bajo demanda */
+.cargando { display: grid; gap: 14px; }
+.esqueleto { display: block; border-radius: 16px; background: linear-gradient(90deg, rgba(118,118,128,.10), rgba(118,118,128,.18), rgba(118,118,128,.10)); background-size: 200% 100%; animation: brillo-esqueleto 1.4s ease-in-out infinite; }
+.esqueleto-titulo { width: 42%; height: 34px; }
+.esqueleto-bloque { width: 100%; height: 220px; }
+.esqueleto-bloque.corto { height: 120px; width: 70%; }
+@keyframes brillo-esqueleto { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+/* Aviso cuando el servidor tarda (plan gratis dormido) */
+.aviso-servidor {
+  position: fixed; z-index: 40; left: 50%; bottom: 24px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 999px;
+  background: var(--tarjeta); border: 1px solid var(--borde); box-shadow: 0 12px 30px -12px rgba(28,28,26,.35);
+  font-size: .9rem; font-weight: 600; color: var(--texto-medio); animation: aparecer .25s var(--curva) both;
+}
+.aviso-servidor-punto { width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--acento); animation: latido 1.1s ease-in-out infinite; }
+@keyframes latido { 50% { transform: scale(.6); opacity: .5; } }
+@media (max-width: 767px) { .aviso-servidor { bottom: calc(92px + env(safe-area-inset-bottom)); border-radius: 18px; } }
+
+/* Vidrio liviano: en celulares y cuando el sistema pide menos transparencia, sin desenfoque en vivo.
+   El desenfoque (backdrop-filter) se recalcula en cada cuadro al hacer scroll y en gama baja traba. */
+@media (max-width: 767px), (prefers-reduced-transparency: reduce) {
+  .vidrio, .tarjeta, .dialogo, .barra, .barra nav, .selector, .opcion, .boton.claro,
+  .pestanas-inferiores, .escenario .cota, .velo, .usuario-menu, .cuenta-menu, .buscador {
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  .vidrio, .tarjeta, .dialogo, .pestanas-inferiores { background: var(--vidrio-fuerte); }
+  .barra { background: color-mix(in srgb, var(--ambiente) 92%, transparent); }
+  .luz, .mancha { filter: blur(48px); animation: none !important; will-change: auto; }
+  .tarjeta::before, .dialogo::before, .vidrio::before { display: none; }
+  html[data-tema="oscuro"] .barra { background: rgba(19, 21, 19, .92); }
+}
+
+/* ---------- Inicio del cliente con sesion ---------- */
+.inicio-cliente { display: grid; gap: 26px; }
+.ic-cabeza { display: grid; gap: 16px; padding-top: 20px; }
+.ic-cabeza h1 { font-size: clamp(1.9rem, 4.5vw, 2.6rem); margin: 6px 0 4px; }
+.ic-cabeza .bajada { color: var(--texto-medio); font-size: 1.05rem; }
+.ic-numeros { display: flex; flex-wrap: wrap; gap: 8px; }
+.ic-numeros span { padding: 6px 12px; border-radius: 999px; background: rgba(118,118,128,.1); font-size: .85rem; color: var(--texto-medio); }
+.ic-numeros b { color: var(--acento-tinta); }
+.ic-seccion { display: grid; gap: 12px; }
+.ic-seccion h2 { font-size: 1.15rem; }
+.ic-titulo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ic-atencion, .ic-lista { display: grid; gap: 10px; }
+.ic-destacado { display: flex; align-items: center; gap: 16px; border: 1.5px solid var(--acento); box-shadow: 0 0 0 4px var(--acento-suave), var(--vidrio-sombra); }
+.ic-texto { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.ic-texto .chip { justify-self: start; }
+.ic-pedido { display: flex; align-items: center; gap: 14px; padding: 14px; text-decoration: none; color: inherit; transition: transform .2s var(--curva); }
+.ic-pedido:hover { transform: translateY(-2px); }
+.ic-fila { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ic-fila strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ic-proyectos { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.ic-proyecto { display: grid; gap: 6px; padding: 16px; text-decoration: none; color: inherit; transition: transform .2s var(--curva); }
+.ic-proyecto:hover { transform: translateY(-2px); }
+.ic-proyecto-ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--acento-suave); color: var(--acento); margin-bottom: 4px; }
+.ic-proyecto.pieza-antigua .ic-proyecto-ico { background: var(--violeta-suave); color: var(--violeta); }
+.ic-seguir { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: .85rem; font-weight: 600; color: var(--acento); }
+.ic-vacio { display: grid; gap: 10px; padding: 24px; }
+.ic-plantillas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.ic-plantillas .opcion { text-decoration: none; display: inline-flex; align-items: center; }
+.ic-plantillas .opcion.antigua { border-color: var(--violeta); color: var(--violeta); }
+@media (max-width: 767px) {
+  .ic-cabeza { text-align: left; }
+  .ic-cabeza .fila .boton { flex: 1 1 100%; }
+  .ic-destacado { flex-wrap: wrap; }
+  .ic-destacado .boton { flex: 1 1 100%; }
+  .ic-fila .chip { display: none; }
+}
+
+/* ---------- Inicio del carpintero ---------- */
+.it-numeros { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.it-numero { display: grid; gap: 2px; padding: 16px; }
+.it-numero .numero { font-size: 1.6rem; white-space: nowrap; }
+.ic-destacado.tranquilo { border-color: var(--borde); box-shadow: var(--vidrio-sombra); }
+.it-perfil { display: flex; align-items: center; gap: 16px; }
+.it-perfil .progreso { margin: 6px 0; }
+@media (max-width: 900px) { .it-numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .it-perfil { flex-wrap: wrap; } .it-perfil .boton { flex: 1 1 100%; } }
+
+/* ---------- Visor ampliable (detalle del pedido de la carpinteria) ---------- */
+.visor-acciones { position: absolute; right: 14px; top: 14px; z-index: 3; display: flex; gap: 6px; }
+.visor-boton {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px;
+  font: 600 .78rem var(--fuente); color: var(--texto-medio); cursor: pointer;
+  background: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.9);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.visor-boton:hover { color: var(--acento); }
+.visor-boton:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+html[data-tema="oscuro"] .visor-boton { background: rgba(20,22,20,.6); border-color: rgba(255,255,255,.08); }
+.escenario .visor { transition: height .25s ease; }
+.escenario.completa { background: var(--fondo); }
+.escenario.completa .visor { height: 100vh !important; border-radius: 0; }
+.escenario.ventana { position: fixed; inset: 0; z-index: 1000; }
+.escenario.ventana .visor { height: 100dvh !important; border-radius: 0; }
+.detalle-amplio { width: min(1440px, calc(100vw - 32px)); margin-left: calc(50% - min(720px, 50vw - 16px)); }
+@media (max-width: 767px) {
+  .visor-boton span { display: none; }
+  .visor-acciones { top: auto; bottom: 10px; right: 10px; }
+  .visor-boton { width: 32px; padding: 0; justify-content: center; }
+  .detalle-amplio { width: auto; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .escenario .visor { transition: none; } }

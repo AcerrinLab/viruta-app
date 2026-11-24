@@ -291,6 +291,7 @@ class ServicioPedidos implements PedidosApi {
             cliente = new VistaPedido.Cliente(nombre, p.telefonoCliente);
         }
         return new VistaPedido(p.id, p.estado, String.valueOf(p.creado), p.leido, datos,
-                conCalculo ? diseno.calcular(datos) : null, presupuesto, taller, cliente);
+                conCalculo ? diseno.calcular(datos) : null, presupuesto, taller, cliente,
+                conCalculo ? null : diseno.piezas(datos));
     }
 }

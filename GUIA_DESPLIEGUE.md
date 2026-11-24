@@ -167,3 +167,11 @@ https://viruta-wishlist.vercel.app/).
 Se cargan y aprueban desde `/admin/testimonios`. Cada usuario también puede dejar el suyo desde
 Cuenta > Mi comentario; queda pendiente hasta que un admin lo aprueba. Si la cuenta entró con Google,
 se muestra su foto de perfil.
+
+## Servidor gratis que se duerme (feature/004)
+
+En los planes gratuitos el backend se apaga si nadie lo usa un rato, y la primera visita espera mientras Java arranca.
+La app ya lo maneja (reintenta las lecturas y muestra "Estamos despertando el servidor…"), pero conviene evitarlo:
+
+1. **Monitor gratuito:** en uptimerobot.com (plan gratis) creá un monitor HTTP(s) a `{BACKEND_URL}/api/salud` cada 5 o 10 minutos. Así el servidor no llega a dormirse. Revisá que tu plataforma permita mantenerlo despierto dentro del plan gratis.
+2. **Memoria de Java:** el `Dockerfile` ya trae `JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"`, pensado para contenedores de 512 MB. Si la plataforma da más memoria, se puede ajustar con la misma variable en el panel, sin reconstruir la imagen.

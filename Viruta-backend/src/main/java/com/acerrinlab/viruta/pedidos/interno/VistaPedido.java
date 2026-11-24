@@ -1,10 +1,16 @@
 package com.acerrinlab.viruta.pedidos.interno;
 
+import java.util.List;
+
 import com.acerrinlab.viruta.diseno.DatosDiseno;
+import com.acerrinlab.viruta.diseno.PiezaDiseno;
 import com.acerrinlab.viruta.diseno.ResultadoDiseno;
 import com.acerrinlab.viruta.pedidos.EstadoPedido;
 
-/** Lo que ven el cliente y la carpinteria de un pedido. */
+/**
+ * Lo que ven el cliente y la carpinteria de un pedido. En las listas viaja solo {@code piezas} (para la
+ * miniatura); en el detalle viaja {@code calculo} completo, que ya incluye las piezas.
+ */
 record VistaPedido(
         long id,
         EstadoPedido estado,
@@ -14,7 +20,8 @@ record VistaPedido(
         ResultadoDiseno calculo,
         Presupuesto presupuesto,
         Taller carpinteria,
-        Cliente cliente) {
+        Cliente cliente,
+        List<PiezaDiseno> piezas) {
 
     record Presupuesto(long materiales, long manoDeObra, boolean clienteCompraMaterial, Integer plazoDias,
             long total, long sena) {

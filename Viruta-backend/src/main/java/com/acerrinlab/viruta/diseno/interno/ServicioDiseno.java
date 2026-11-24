@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.acerrinlab.viruta.compartido.ErrorNegocio;
 import com.acerrinlab.viruta.diseno.DatosDiseno;
 import com.acerrinlab.viruta.diseno.DisenoApi;
+import com.acerrinlab.viruta.diseno.PiezaDiseno;
 import com.acerrinlab.viruta.diseno.ResultadoDiseno;
 import com.acerrinlab.viruta.materiales.MaterialesApi;
 
@@ -29,6 +30,19 @@ class ServicioDiseno implements DisenoApi {
     @Override
     public ResultadoDiseno calcular(DatosDiseno diseno) {
         return calculador.calcular(diseno);
+    }
+
+    @Override
+    public List<PiezaDiseno> piezas(DatosDiseno d) {
+        if (d == null || d.material() == null) {
+            return List.of();
+        }
+        try {
+            return GeneradorPiezas.generar(d.plantilla(), d.ancho(), d.alto(), d.profundidad(), d.estantes(),
+                    d.material().espesor());
+        } catch (ErrorNegocio e) {
+            return List.of();
+        }
     }
 
     @Override

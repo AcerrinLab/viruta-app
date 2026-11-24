@@ -1,16 +1,13 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { Suspense, createContext, lazy, useContext, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { guardarSesion, leerSesion } from './api.js';
 import Inicio from './paginas/Inicio.jsx';
-import Disenar from './paginas/Disenar.jsx';
 import Acceso from './paginas/Acceso.jsx';
-import Carpinterias from './paginas/Carpinterias.jsx';
-import MisPedidos from './paginas/MisPedidos.jsx';
-import Panel from './paginas/Panel.jsx';
-import PagoSimulado from './paginas/PagoSimulado.jsx';
-import Admin from './paginas/Admin.jsx';
+import AvisoServidor from './componentes/AvisoServidor.jsx';
+import { precargarSegunRol, paginas } from './lib/carga.js';
+import { destinoInicio } from './lib/inicioCliente.js';
 import { Avatar } from './componentes/Testimonios.jsx';
-import Cuenta from './paginas/Cuenta.jsx';
+
 import Buscador from './componentes/Buscador.jsx';
 import { Interruptor, aplicarTema } from './componentes/Comunes.jsx';
 import { Icono } from './componentes/Iconos.jsx';
@@ -24,6 +21,39 @@ function Solo({ rol, children }) {
   if (!sesion) return <Navigate to="/ingresar" replace />;
   if (sesion.rol !== rol) return <Navigate to="/" replace />;
   return children;
+}
+
+// RNF-04 y RNF-05: cada pantalla se descarga cuando se abre. El inicio y el acceso van en el paquete
+// principal porque son la puerta de entrada; el 3D, el mapa y los paneles llegan despues.
+const Disenar = lazy(paginas.disenar);
+const Carpinterias = lazy(paginas.carpinterias);
+const MisPedidos = lazy(paginas.misPedidos);
+const Panel = lazy(paginas.panel);
+const PagoSimulado = lazy(paginas.pagoSimulado);
+const Admin = lazy(paginas.admin);
+const Cuenta = lazy(paginas.cuenta);
+const InicioCliente = lazy(paginas.inicioCliente);
+const InicioTaller = lazy(paginas.inicioTaller);
+
+/** El logo lleva a "/": portada publica sin sesion, inicio propio del cliente, o el panel de cada rol. */
+function InicioSegunSesion() {
+  const { sesion } = useSesion();
+  const destino = destinoInicio(sesion);
+  if (destino === 'publico') return <Inicio />;
+  if (destino === 'cliente') return <InicioCliente sesion={sesion} />;
+  if (destino === 'taller') return <InicioTaller sesion={sesion} />;
+  return <Navigate to={destino} replace />;
+}
+
+/** Lo que se ve mientras llega una pantalla: el mismo esqueleto suave, sin saltos. */
+function Cargando() {
+  return (
+    <main className="cargando" aria-busy="true" aria-label="Cargando">
+      <span className="esqueleto esqueleto-titulo" />
+      <span className="esqueleto esqueleto-bloque" />
+      <span className="esqueleto esqueleto-bloque corto" />
+    </main>
+  );
 }
 
 const ROLES = { CLIENTE: 'Cliente', CARPINTERIA: 'Carpintería', ADMIN: 'Administración' };
@@ -53,7 +83,7 @@ function Usuario({ sesion, alSalir }) {
   return (
     <div className="usuario" ref={caja}>
       <button className="usuario-boton" aria-haspopup="menu" aria-expanded={abierto} onClick={() => setAbierto(!abierto)}>
-        <Avatar nombre={sesion.nombre} foto={sesion.fotoUrl} tam={32} />
+        <Avatar nombre={sesion.nombre} semilla={sesion.email} foto={sesion.fotoUrl} tam={32} />
         <span className="usuario-nombre">{nombre.split(' ')[0]}</span>
       </button>
       {abierto && (
@@ -137,6 +167,8 @@ export default function App() {
 
   // Verde para clientes, nogal para talleres.
   useEffect(() => aplicarTema(sesion?.rol), [sesion]);
+  // Deja listas, en segundo plano, las pantallas que la persona probablemente abra.
+  useEffect(() => { precargarSegunRol(sesion?.rol); }, [sesion?.rol]);
 
   return (
     <Sesion.Provider value={{ sesion, entrar, salir }}>
@@ -180,8 +212,10 @@ export default function App() {
           ? <NavLink to="/cuenta" end className={({ isActive }) => (isActive || (window.location.pathname.startsWith('/cuenta/') && !window.location.pathname.endsWith('/proyectos')) ? 'activo' : '')}><Icono nombre="persona" tam={22} /><span>Cuenta</span></NavLink>
           : <NavLink to="/ingresar" className={activo}><Icono nombre="persona" tam={22} /><span>Ingresar</span></NavLink>}
       </nav>
+      <AvisoServidor />
+      <Suspense fallback={<Cargando />}>
       <Routes>
-        <Route path="/" element={<Inicio />} />
+        <Route path="/" element={<InicioSegunSesion />} />
         <Route path="/disenar" element={<Disenar />} />
         <Route path="/ingresar" element={<Acceso />} />
         <Route path="/carpinterias" element={<Solo rol="CLIENTE"><Carpinterias /></Solo>} />
@@ -195,6 +229,7 @@ export default function App() {
         <Route path="/metricas" element={<Navigate to="/admin" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </Suspense>
     </Sesion.Provider>
   );
 }

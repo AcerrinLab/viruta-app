@@ -8,7 +8,7 @@ import { COLORES, MATERIALES } from '../lib/diseno.js';
 import { medidas, mmACm, pesos } from '../lib/unidades.js';
 import { Icono } from '../componentes/Iconos.jsx';
 import { usarMovil } from '../lib/tema.js';
-import Miniatura from '../componentes/Miniatura.jsx';
+import Miniatura, { piezasDe } from '../componentes/Miniatura.jsx';
 
 const PESTANAS = [
   ['Nuevos', ['PENDIENTE']],
@@ -73,6 +73,7 @@ function Detalle({ id, alCambiar, alCerrar }) {
   const [mano, setMano] = useState('');
   const [plazo, setPlazo] = useState('');
   const [clienteCompra, setClienteCompra] = useState(false);
+  const [amplio, setAmplio] = useState(false);
 
   useEffect(() => {
     setP(null);
@@ -96,9 +97,9 @@ function Detalle({ id, alCambiar, alCerrar }) {
   const total = (clienteCompra ? 0 : Number(materiales) || 0) + (Number(mano) || 0);
 
   return (
-    <div className="pila">
+    <div className={'pila' + (amplio ? ' detalle-amplio' : '')}>
       <div className="tarjeta sin-relleno">
-        <Visor3D piezas={p.calculo.piezas} color={d.color} alto={260} />
+        <Visor3D piezas={p.calculo.piezas} color={d.color} alto={260} ampliable alAmpliar={setAmplio} />
         <div className="pila" style={{ padding: 20 }}>
           <div className="fila entre">
             <div>
@@ -238,7 +239,7 @@ export default function Panel() {
       {visibles.length === 0 && <p className="tenue">No hay pedidos acá.</p>}
       {visibles.map((p) => (
         <button key={p.id} className="tarjeta elegible fila entre pedido-bandeja" onClick={() => setParametros({ pedido: p.id })}>
-          <Miniatura piezas={p.calculo?.piezas} color={p.diseno.color} tam={56} />
+          <Miniatura piezas={piezasDe(p)} color={p.diseno.color} tam={56} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <h3>{!p.leido && <span className="punto" aria-label="Sin leer" />}{p.diseno.nombre}</h3>
             <p className="tenue">{p.cliente.nombre} · {medidas(p.diseno)} · {MATERIALES[p.diseno.material]}</p>
